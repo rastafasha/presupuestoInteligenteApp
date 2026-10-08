@@ -1,15 +1,10 @@
 import {
-  Component,
-  Input,
-  OnInit,
-  SimpleChanges,
-  OnChanges,
-  Output,
-  EventEmitter,
-  OnDestroy,
+  Component, Input,
+  OnInit, SimpleChanges,
+  OnChanges, Output,
+  EventEmitter, OnDestroy,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Cotizacion } from 'src/app/models/cotizacion';
 import { AuthService } from 'src/app/services/auth.service';
 import { CotizacionService } from 'src/app/services/cotizacion.service';
 import { SocketService } from 'src/app/services/socket.service';
@@ -31,70 +26,79 @@ export class ProjectEditComponent implements OnInit, OnChanges, OnDestroy {
   title: string = 'Ficha del Cliente';
   usuario: any;
   isLoading: boolean = false;
-  
-  // 🔥 CORREGIDO: Sincronizado con 'stepActual' del HTML para que la interfaz renderice de inmediato
-  stepActual: number = 1; 
-  
-  // Guardará la cotización activa que contiene el array de productos y proveedores
+  stepActual: number = 1;
+
   cotizacionSeleccionada: any = null;
   cotizaciones: any[] = [];
   private socketSub!: Subscription;
+
+  filtroArticuloSeleccionado: string | null = null;
 
   constructor(
     private authService: AuthService,
     private cotizacionService: CotizacionService,
     private socketService: SocketService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.usuario = this.authService.getLocalStorage();
 
-    // 🔌 ENGRANAJE EN VIVO: Escuchamos el WebSocket para inyectar cotizaciones de Apple en tiempo real
+    // 🌟 LA CLAVE DE CARGA INICIAL: Apenas se inicializa el modal, disparamos la descarga
+    // Esto asegura que el contador pase de 0 a 1 inmediatamente al abrir la ficha
+    if (this.projectSeleccionado?._id) {
+      console.log('🔌 [INIT]: Cargando historial para el cliente:', this.projectSeleccionado.nombre);
+      this.getCotizaciones(false);
+    }
+
+    // 🔌 ENGRANAJE EN VIVO: Escuchamos el WebSocket para inyectar cotizaciones en tiempo real
     this.socketSub = this.socketService.escucharEvento('nueva-solicitud-entrante')
       .subscribe((nuevaCot: any) => {
         const clienteIdActual = this.projectSeleccionado?._id;
 
-        // 🛡️ Filtro de Seguridad: Solo inyectamos si pertenece al cliente abierto en el modal
         if (clienteIdActual && nuevaCot.cliente?.id === clienteIdActual) {
-          console.log('🚀 [SOCKET]: Nueva cotización detectada en vivo para este cliente:', nuevaCot);
-          
-          // Mapeamos los proveedores de la cotización que entra en vivo
+          console.log('🚀 [SOCKET]: Nueva cotización en vivo:', nuevaCot);
+
           if (nuevaCot.proveedoresEncontrados && nuevaCot.proveedoresEncontrados.length > 0) {
             nuevaCot.proveedoresEncontrados.forEach((prov: any) => {
+              prov.seleccionado = false;
               prov.porcentajeGanancia = prov.porcentajeGanancia || 0;
               prov.precioVentaFinal = prov.precioCosto;
             });
           }
-          
-          // Agregamos la cotización al pool general y la seleccionamos para actualizar el Paso 2
+
           this.cotizaciones.unshift(nuevaCot);
           this.cotizacionSeleccionada = nuevaCot;
         }
       });
   }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['projectSeleccionado'] && changes['projectSeleccionado'].currentValue) {
       const project = changes['projectSeleccionado'].currentValue;
       this.projectSeleccionado = project;
-      
+
       console.log('👤 Cliente seleccionado cargado en el modal:', this.projectSeleccionado);
 
-      // 🔄 REACCIÓN INTELIGENTE DE APERTURA DESDE LA CAMPANA O TABLA
+      // 🌟 RE-DISPARAMOS AQUÍ POR SI CAMBIAS DE CLIENTE EN LA LISTA PRINCIPAL
+      this.getCotizaciones(false);
+
       if (project.abrirEnPasoDos) {
-        this.stepActual = 2; 
-        this.getCotizaciones(); 
-        delete project.abrirEnPasoDos; 
+        this.stepActual = 2;
+        delete project.abrirEnPasoDos;
       } else {
-        this.stepActual = 1; 
+        this.stepActual = 1;
       }
     }
   }
 
+  irAlPasoDos(): void {
+    console.log('⚡ [NAVEGACIÓN]: Solicitando avance al Paso 2. Descargando datos...');
+    this.getCotizaciones(true); // 🚀 Pasamos 'true' para indicar que queremos conmutar la pantalla al finalizar la descarga
+  }
+
   /**
-   * Carga las cotizaciones del cliente y selecciona la más reciente para el despiece de la IA
-   */
-  getCotizaciones(): void {
+ * Carga las cotizaciones del cliente y repara la estructura del seeder al vuelo
+ */
+  getCotizaciones(cambiarDePaso: boolean = false): void {
     const clienteId = this.projectSeleccionado?._id;
     if (!clienteId) return;
 
@@ -104,24 +108,41 @@ export class ProjectEditComponent implements OnInit, OnChanges, OnDestroy {
         const listadoCrudo = resp.cotizaciones || resp || [];
 
         this.cotizaciones = listadoCrudo.map((cot: any) => {
-          // Si el backend ya guardó proveedores, inicializamos sus propiedades de cálculo reactivo
           if (cot.proveedoresEncontrados && cot.proveedoresEncontrados.length > 0) {
-            cot.proveedoresEncontrados.forEach((prov: any) => {
-              prov.porcentajeGanancia = cot.porcentajeGanancia || 0;
-              // Si ya tiene precio final calculado de la base de datos lo usa, si no, inicia con el costo base
-              prov.precioVentaFinal = cot.precioFinalVenta || prov.precioCosto;
+            cot.proveedoresEncontrados.forEach((prov: any, index: number) => {
+              prov.seleccionado = false;
+              prov.porcentajeGanancia = prov.porcentajeGanancia || 0;
+              prov.precioVentaFinal = prov.precioVentaFinal || prov.precioCosto;
+
+              // Si el registro del seeder viene vacío o dice 'General', le inyectamos su artículo correspondiente
+              const stringProductoAsociado = (prov.productoAsociado || '').toLowerCase().trim();
+              if (!prov.productoAsociado || stringProductoAsociado === 'general' || stringProductoAsociado === '') {
+                if (cot.articulosDetallados && cot.articulosDetallados.length > 0) {
+                  // Mapeo circular: vincula por índice de fila. Si hay desfase, toma el primero.
+                  const articuloReal = cot.articulosDetallados[index] || cot.articulosDetallados[0];
+                  prov.productoAsociado = articuloReal.productoDetalle;
+                }
+              }
             });
           }
           return cot;
         });
 
-        // 🔥 Establecemos la cotización más reciente en foco para pintar el Paso 2 del HTML
+        // 🌟 LA REPARACIÓN ASÍNCRONA MAESTRA:
         if (this.cotizaciones.length > 0) {
+          // Asignamos el primer objeto individual (el más reciente) para poblar las subtablas
           this.cotizacionSeleccionada = this.cotizaciones[0];
+
+          // 🔥 CONTROL DE FLUJO SEGURO: Conmutamos al Paso 2 únicamente si los datos ya están en memoria
+          if (cambiarDePaso) {
+            this.stepActual = 2;
+          }
+        } else {
+          this.cotizacionSeleccionada = null;
         }
 
         this.isLoading = false;
-        console.log('📊 Cotización activa en foco para el modal:', this.cotizacionSeleccionada);
+        console.log('📊 [CRM]: Datos cargados y validados. Paso actual:', this.stepActual);
       },
       error: (err) => {
         this.isLoading = false;
@@ -129,68 +150,128 @@ export class ProjectEditComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
   }
-
   /**
-   * Recalcula dinámicamente el precio de venta final en la UI al cambiar el input del %
-   */
+ * Permite cambiar la cotización activa en foco al hacer clic en el historial
+ */
+  seleccionarCotizacionDelHistorial(cotizacion: any): void {
+    this.cotizacionSeleccionada = cotizacion;
+    this.filtroArticuloSeleccionado = null; // Limpiamos filtros previos
+
+    // Opcional: Si quieres que al hacer clic salte directo a ver sus precios, descomenta la línea de abajo
+    // this.stepActual = 2;
+
+    console.log('🔄 Cambiado el foco del modal a la cotización anterior:', this.cotizacionSeleccionada);
+  }
+
+
+  filtrarProveedoresPorArticulo(detalleProducto: string): void {
+    if (this.filtroArticuloSeleccionado === detalleProducto) {
+      this.filtroArticuloSeleccionado = null;
+    } else {
+      this.filtroArticuloSeleccionado = detalleProducto;
+    }
+  }
+
+  get proveedoresFiltrados(): any[] {
+    const listaCompleta = this.cotizacionSeleccionada?.proveedoresEncontrados || [];
+
+    if (!this.filtroArticuloSeleccionado) {
+      return listaCompleta;
+    }
+
+    const filtroLimpio = this.filtroArticuloSeleccionado.toLowerCase().trim();
+
+    return listaCompleta.filter((prov: any) => {
+      if (!prov.productoAsociado) return false;
+
+      const productoProv = prov.productoAsociado.toLowerCase().trim();
+
+      // 🌟 INTELIGENCIA DE FALLBACK PARA EL ERROR 429:
+      // Si la data del scraper es la de contingencia ("General"), no bloqueamos la UI y mostramos las opciones siempre
+      if (productoProv === 'general') return true;
+
+      const palabrasFiltro = filtroLimpio.split(' ').filter(p => p.length > 2);
+      const coincideTexto = productoProv.includes(filtroLimpio) || filtroLimpio.includes(productoProv);
+      const coincidePalabraClave = palabrasFiltro.some(palabra => productoProv.includes(palabra));
+
+      return coincideTexto || coincidePalabraClave;
+    });
+  }
+
   calcularPrecioVenta(proveedor: any): void {
     if (!proveedor || !proveedor.precioCosto) return;
-
     const costoBase = parseFloat(proveedor.precioCosto);
     const margen = parseFloat(proveedor.porcentajeGanancia) || 0;
-
-    // Fórmula matemática directa: Costo * (1 + Margen/100)
     proveedor.precioVentaFinal = costoBase * (1 + (margen / 100));
   }
 
   /**
-   * Despacha la propuesta final (vía WhatsApp o Correo) conectando con el backend
+ * Cambia el estado de selección de la oferta y recalcula de inmediato para habilitar los campos
+ */
+  alternarSeleccion(proveedor: any): void {
+    proveedor.seleccionado = !proveedor.seleccionado;
+
+    // Si el usuario desmarca la opción, reseteamos su ganancia y precio para mantener limpia la UI
+    if (!proveedor.seleccionado) {
+      proveedor.porcentajeGanancia = 0;
+      proveedor.precioVentaFinal = proveedor.precioCosto;
+    }
+  }
+
+  hayProveedoresSeleccionados(): boolean {
+    return this.cotizacionSeleccionada?.proveedoresEncontrados?.some((p: any) => p.seleccionado) || false;
+  }
+
+  obtenerCantidadSeleccionados(): number {
+    return this.cotizacionSeleccionada?.proveedoresEncontrados?.filter((p: any) => p.seleccionado).length || 0;
+  }
+
+  /**
+   * 🚀 NUEVA FUNCIÓN CONSOLIDADA: Despacha las ofertas elegidas por checkbox en bloque
    */
-  despacharPropuesta(proveedor: any): void {
-    if (!this.cotizacionSeleccionada || !proveedor) return;
+  despacharPresupuestoConsolidado(): void {
+    if (!this.cotizacionSeleccionada) return;
+
+    // Filtramos únicamente las filas que el usuario marcó con el checkbox
+    const seleccionados = this.cotizacionSeleccionada.proveedoresEncontrados.filter((p: any) => p.seleccionado);
 
     const payload = {
       cotizacionId: this.cotizacionSeleccionada._id,
-      porcentajeGanancia: proveedor.porcentajeGanancia || 0,
-      precioCostoSeleccionado: proveedor.precioCosto,
-      nombreProveedorSeleccionado: proveedor.nombreProveedor,
-      canalEnvio: this.cotizacionSeleccionada.canalEntrada // El sistema sabe si vino de 'whatsapp' o 'correo' [1]
+      canalEnvio: this.cotizacionSeleccionada.canalEntrada,
+      ofertasElegidas: seleccionados.map((p: any) => ({
+        articulo: p.productoAsociado || 'Artículo Solicitado',
+        proveedor: p.nombreProveedor,
+        costo: p.precioCosto,
+        gananciaAplicada: p.porcentajeGanancia || 0,
+        precioVenta: p.precioVentaFinal || p.precioCosto
+      }))
     };
 
     Swal.fire({
-      title: '¿Despachar Presupuesto?',
-      text: `Se enviará la propuesta comercial de forma automatizada por el canal de ${payload.canalEnvio.toUpperCase()}.`,
-      icon: 'info',
+      title: '¿Despachar Presupuesto Consolidado?',
+      text: `Se empaquetarán ${seleccionados.length} ofertas seleccionadas en un único envío comercial vía ${payload.canalEnvio.toUpperCase()}.`,
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#6f42c1',
+      confirmButtonColor: '#28a745',
       confirmButtonText: 'Sí, enviar ahora'
     }).then((result) => {
       if (result.isConfirmed) {
         this.cotizacionService.enviarPropuestaComercial(payload).subscribe({
           next: (res: any) => {
-            Swal.fire('¡Propuesta Enviada!', res.msg, 'success');
-            this.cotizacionSeleccionada.estado = 'enviado'; // Congela la fila en el HTML [1]
-            this.refreshProjectList.emit(); // Refresca el CRM de fondo [1]
+            Swal.fire('¡Enviado con Éxito!', res.msg, 'success');
+            this.cotizacionSeleccionada.estado = 'enviado';
+            this.cerrarModal();
           },
           error: (err) => {
             console.error(err);
-            Swal.fire('Error', 'No se pudo procesar el despacho automatizado.', 'error');
+            Swal.fire('Error', 'Hubo un inconveniente al procesar el despacho por lote.', 'error');
           }
         });
       }
     });
   }
 
-  /**
-   * Avanzar al Paso 2 de forma limpia y directa
-   */
-  irAlPasoDos(): void {
-    this.stepActual = 2;
-    this.getCotizaciones();
-  }
-
   cerrarModal(): void {
-    // 1. Ocultamos el modal programáticamente a través de Bootstrap de forma segura
     const modalElement = document.getElementById('editProject');
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement);
@@ -199,31 +280,30 @@ export class ProjectEditComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
-    // 2. 🔥 ANCLA DE SEGURIDAD: Eliminamos manualmente cualquier fondo gris huérfano en el DOM
-    const backdrops = document.querySelectorAll('.modal-backdrop');
-    backdrops.forEach(backdrop => backdrop.remove());
-    
-    // 3. Devolvemos el scroll al cuerpo de la página por si Bootstrap lo dejó congelado
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
+    setTimeout(() => {
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(backdrop => backdrop.remove());
 
-    // 4. Limpiamos las variables del estado después de asegurar la limpieza visual
-    this.projectSeleccionado = null;
-    this.cotizacionSeleccionada = null;
-    this.stepActual = 1;
-    this.cotizaciones = []; 
+      document.body.classList.remove('modal-open');
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('padding-right');
+      document.documentElement.style.removeProperty('overflow');
 
-    // 5. Emitimos los eventos de refresco al componente padre
-    this.refreshProjectList.emit();
-    this.closeModal.emit();
+      this.projectSeleccionado = null;
+      this.cotizacionSeleccionada = null;
+      this.stepActual = 1;
+      this.cotizaciones = [];
+
+      this.refreshProjectList.emit();
+      this.closeModal.emit();
+    }, 350);
   }
 
+
+
   ngOnDestroy(): void {
-    // 🧹 Apagamos el WebSocket al destruir el modal para evitar fugas de memoria [1]
     if (this.socketSub) {
       this.socketSub.unsubscribe();
-      console.log('🧹 [SOCKET]: Canal de escucha del modal cerrado limpiamente [1].');
     }
   }
 }

@@ -4,7 +4,8 @@
       <div class="modal-header">
         <h5 class="modal-title" id="projectModalLabel">{{title}}: {{projectSeleccionado?.nombre}} |
           {{projectSeleccionado?.empresa}}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModal()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
         <app-loading *ngIf="isLoading"></app-loading>
@@ -22,6 +23,7 @@
               <span class="step-label">Cotizaciones</span>
             </div>
           </div>
+
           <div *ngIf="stepActual === 1" class="animate__animated animate__fadeIn">
             <div class="card border-0 bg-light p-4 mb-4">
               <div class="d-flex align-items-center mb-3">
@@ -55,123 +57,195 @@
                 </div>
               </div>
             </div>
+            <!-- 📜 SECCIÓN DE HISTORIAL DE COTIZACIONES (Cliente Frecuente) -->
+            <div class="mt-4">
+              <h5 class="d-flex align-items-center gap-2 text-secondary border-bottom pb-2">
+                ⏱️ Historial de Solicitudes y Presupuestos
+                <span class="badge bg-secondary rounded-pill fs-7">{{ cotizaciones?.length || 0 }}</span>
+              </h5>
 
-            <div class="d-flex justify-content-end">
-             <button type="button" class="btn btn-purple px-4 py-2" (click)="irAlPasoDos()">
-              Ver Requerimientos Detallados <i class="fa fa-arrow-right ms-2"></i>
-            </button>
+              <!-- Listado cronológico compacto -->
+              <div class="list-group shadow-sm" style="max-height: 250px; overflow-y: auto;">
+
+                <!-- Iteramos de forma directa cada cotización del cliente frecuente -->
+                <button *ngFor="let cot of cotizaciones" type="button"
+                  class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                  [class.active]="cot._id === cotizacionSeleccionada?._id"
+                  (click)="seleccionarCotizacionDelHistorial(cot)">
+
+                  <div class="d-flex flex-column text-start gap-1">
+                    <span class="fw-bold text-dark small"
+                      style="max-width: 450px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                      {{ cot.tituloAsunto || cot.productoSolicitado }}
+                    </span>
+                    <span class="text-muted fs-7">
+                      📩 Recibido: {{ cot.fechaRecepcionOriginal | date:'dd/MM/yyyy - hh:mm a' }}
+                    </span>
+                  </div>
+
+                  <div class="text-end d-flex flex-column align-items-end gap-1">
+                    <span class="fw-bold text-success small" *ngIf="cot.precioFinalVenta > 0">
+                      {{ cot.precioFinalVenta | currency:'USD':'symbol':'1.2-2' }}
+                    </span>
+                    <span class="badge px-2 py-1 rounded" [ngClass]="{
+          'border-warning text-dark': cot.estado === 'pendiente_analisis',
+          'border-info text-dark': cot.estado === 'listo_para_enviar',
+          'border-success': cot.estado === 'enviado'
+        }">
+                      {{ cot.estado === 'pendiente_analisis' ? '⏳ Pendiente' : cot.estado === 'listo_para_enviar' ? '📦 Listo' : '🚀 Enviado' }}
+                    </span>
+                  </div>
+                </button>
+
+              </div>
+            </div>
+
+            <!-- Botón para avanzar al comparador -->
+            <div class="d-flex justify-content-end mt-4">
+              <button type="button" class="btn btn-purple px-4 py-2 d-flex align-items-center gap-2 shadow-sm"
+                (click)="irAlPasoDos()" [disabled]="!cotizaciones?.length">
+                <span>Ver Requerimientos Detallados</span>
+                <i class="fa fa-arrow-right"></i>
+              </button>
             </div>
           </div>
-          <!-- lista de cotizaciones -->
-          <div *ngIf="stepActual === 2" class="animate__animated animate__fadeIn">
+        </div>
 
-            <!-- Subtabla Nueva: Artículos desglosados quirúrgicamente por Gemini -->
-            <div class="mb-4">
-              <h5 class="text-dark fw-bold mb-3 d-flex align-items-center">
-                <i class="fa fa-boxes text-purple me-2"></i> Artículos Solicitados en Tiempo Real
-              </h5>
+        <!-- lista de cotizaciones -->
+        <!-- === PASO 2: VISUALIZACIÓN DE LA COTIZACIÓN ACTIVA === -->
+        <div *ngIf="stepActual === 2">
 
-              <div class="table-responsive rounded-3 border">
-                <table class="table table-hover align-middle mb-0">
-                  <thead class="bg-light text-muted text-uppercase text-xs font-monospace">
-                    <tr>
-                      <th style="width: 15%">Cant.</th>
-                      <th>Descripción del Producto / Especificación</th>
-                      <th style="width: 20%">Estado IA</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!-- Iteramos sobre la nueva propiedad articulosDetallados extraída por el Backend -->
-                    <tr *ngFor="let articulo of cotizacionSeleccionada?.articulosDetallados">
-                      <td>
-                        <span class="badge bg-purple-light text-purple fw-bold px-3 py-2">
-                          {{ articulo.cantidad }}x
-                        </span>
-                      </td>
-                      <td>
-                        <span class="text-dark fw-semibold">{{ articulo.productoDetalle }}</span>
-                      </td>
-                      <td>
-                        <span class="badge bg-success-light text-success px-2 py-1 text-xs">
-                          <i class="fa fa-check-circle me-1"></i> Mapeado
-                        </span>
-                      </td>
-                    </tr>
-                    <tr *ngIf="!cotizacionSeleccionada?.articulosDetallados?.length">
-                      <td colspan="3" class="text-center py-3 text-muted text-xs">
-                        No se encontraron artículos desglosados en esta solicitud.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+          <div class="mb-3 p-3 bg-light rounded border">
+            <h6 class="text-muted text-uppercase small fw-bold mb-1">Detalles de Recepción</h6>
+            <div class="d-flex justify-content-between align-items-center">
+              <span><strong>Asunto:</strong> {{ cotizacionSeleccionada?.tituloAsunto }}</span>
+              <span class="badge bg-secondary">
+                📅 {{ cotizacionSeleccionada?.fechaRecepcionOriginal | date:'dd/MM/yyyy - hh:mm a' }}
+              </span>
             </div>
+          </div>
 
-            <!-- Historial de Presupuestos y Comparador de Proveedores del Scraper -->
-            <div class="mb-4">
-              <h5 class="text-dark fw-bold mb-3 d-flex align-items-center">
-                <i class="fa fa-search-dollar text-purple me-2"></i> Análisis del Scraper y Márgenes de Venta
-              </h5>
+          <!-- Subtabla 1: Artículos Solicitados con Filtro Interactivo -->
+          <h5>Artículos Solicitados (Pulsa uno para filtrar los costos de internet)</h5>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Cant.</th>
+                <th>Descripción del Producto / Especificación</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let articulo of cotizacionSeleccionada?.articulosDetallados"
+                (click)="filtrarProveedoresPorArticulo(articulo.productoDetalle)"
+                [class.table-primary]="filtroArticuloSeleccionado === articulo.productoDetalle"
+                style="cursor: pointer;">
+                <td>{{ articulo.cantidad }}x</td>
+                <td class="fw-bold">{{ articulo.productoDetalle }}</td>
+                <td>
+                  <span class="badge"
+                    [ngClass]="filtroArticuloSeleccionado === articulo.productoDetalle ? 'bg-primary' : 'bg-secondary'">
+                    {{ filtroArticuloSeleccionado === articulo.productoDetalle ? '🔊 Filtrando...' : '🔍 Ver Costos'
+                    }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-              <div class="table-responsive rounded-3 border">
-                <table class="table table-hover align-middle mb-0">
-                  <thead class="bg-light text-muted text-uppercase text-xs font-monospace">
-                    <tr>
-                      <th>Proveedor Encontrado</th>
-                      <th>Costo Base</th>
-                      <th style="width: 20%">% Ganancia</th>
-                      <th>Precio Venta Final</th>
-                      <th>Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!-- Iteración sobre los proveedores que Gemini Search inyectó en vivo -->
-                    <tr *ngFor="let prov of cotizacionSeleccionada?.proveedoresEncontrados">
-                      <td>
-                        <a [href]="prov.urlOrigen" target="_blank" class="text-purple fw-bold text-decoration-none">
-                          <i class="fa fa-external-link-alt me-1 text-xs"></i> {{ prov.nombreProveedor }}
-                        </a>
-                      </td>
-                      <td class="fw-bold text-dark">
-                        {{ prov.precioCosto | currency:'USD':'symbol':'1.2-2' }}
-                      </td>
-                      <td>
-                        <div class="input-group input-group-sm" style="width: 100px;">
-                          <!-- Vinculado dinámicamente para calcular márgenes en vivo -->
-                          <input type="number" class="form-control text-center fw-bold"
-                            [(ngModel)]="prov.porcentajeGanancia" (input)="calcularPrecioVenta(prov)">
-                          <span class="input-group-text bg-light text-muted">%</span>
-                        </div>
-                      </td>
-                      <td class="fw-bold text-purple fs-5">
-                        {{ (prov.precioVentaFinal || 0) | currency:'USD':'symbol':'1.2-2' }}
-                      </td>
-                      <td>
-                        <!-- Despachar propuesta mediante la función manual que lee tu whatsapp o correo corporativo -->
-                        <button class="btn btn-sm btn-success px-3 rounded-pill fw-bold"
-                          [disabled]="cotizacionSeleccionada.estado === 'enviado'" (click)="despacharPropuesta(prov)">
-                          <i class="fa fa-paper-plane me-1"></i> Despachar
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Botones de Navegación del Modal -->
-          <div class="d-flex justify-content-between mt-4">
-            <button type="button" class="btn btn-outline-secondary px-4" (click)="stepActual = 1">
-              <i class="fa fa-arrow-left me-2"></i> Volver a Ficha
+          <!-- Botón rápido para limpiar filtros si hay alguno activo -->
+          <div class="mb-2 text-end" *ngIf="filtroArticuloSeleccionado">
+            <button class="btn btn-sm btn-link text-danger" (click)="filtroArticuloSeleccionado = null">
+              ✖ Quitar filtro y mostrar todos los artículos
             </button>
-            <button type="button" class="btn btn-light px-4" (click)="cerrarModal()">
+          </div>
+
+          <!-- 🚀 Subtabla 2: Análisis del Scraper Filtrado -->
+          <!-- ===== ANÁLISIS DEL SCRAPER Y MÁRGENES DE VENTA ===== -->
+          <h5 class="mt-4">Análisis del Scraper y Márgenes de Venta</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <!-- Cambiamos el título de la cabecera por algo limpio -->
+                  <th class="text-center" style="width: 80px;">Elegir</th>
+                  <th>Artículo Asociado</th>
+                  <th>Proveedor Encontrado</th>
+                  <th>Costo Base</th>
+                  <th>% Ganancia</th>
+                  <th>Precio Venta Final</th>
+                  <th class="text-center">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let prov of proveedoresFiltrados">
+
+                  <!-- 🌟 SOLUCIÓN DEFINITIVA AL CHECK INVISIBLE: Simulación con emojis e inline CSS -->
+                  <td class="text-center">
+                    <button type="button" class="btn btn-link p-0 text-decoration-none"
+                      style="font-size: 1.4rem; line-height: 1; border: none; background: none;"
+                      (click)="alternarSeleccion(prov)">
+                      {{ prov.seleccionado ? '✅' : '🔳' }}
+                    </button>
+                  </td>
+
+                  <td>
+                    <span class="badge bg-light text-dark border">{{ prov.productoAsociado || 'General' }}</span>
+                  </td>
+                  <td class="fw-semibold">{{ prov.nombreProveedor }}</td>
+                  <td>{{ prov.precioCosto | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td>
+                    <!-- 🌟 EL INPUT SE DESBLOQUEA: Ya responde de forma reactiva al estado del emoji -->
+                    <input type="number" class="form-control form-control-sm text-center mx-auto"
+                      style="width: 80px; font-weight: bold;" [(ngModel)]="prov.porcentajeGanancia"
+                      (input)="calcularPrecioVenta(prov)" [disabled]="!prov.seleccionado">
+                  </td>
+                  <td class="fw-bold" style="color: #6f42c1;">
+                    {{ (prov.precioVentaFinal || prov.precioCosto) | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <a *ngIf="prov.urlOrigen?.includes('instagram.com')" [href]="prov.urlOrigen" target="_blank"
+                      class="btn btn-sm btn-outline-danger me-1">📸 IG</a>
+                    <a *ngIf="prov.urlOrigen?.includes('tiktok.com')" [href]="prov.urlOrigen" target="_blank"
+                      class="btn btn-sm btn-outline-dark me-1">🎵 TikTok</a>
+                    <a *ngIf="!prov.urlOrigen?.includes('instagram.com') && !prov.urlOrigen?.includes('tiktok.com')"
+                      [href]="prov.urlOrigen || '#'" target="_blank" class="btn btn-sm btn-outline-secondary me-1">🌐
+                      Web</a>
+                  </td>
+                </tr>
+
+                <tr *ngIf="!proveedoresFiltrados?.length">
+                  <td colspan="7" class="text-center text-muted p-4">
+                    No hay alternativas comerciales registradas para este artículo en este momento.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- BOTÓN GLOBAL DE CONSOLIDACIÓN (Abajo a la derecha) -->
+          <div class="d-flex justify-content-end my-3" *ngIf="cotizacionSeleccionada?.estado !== 'enviado'">
+            <button class="btn btn-success px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+              [disabled]="!hayProveedoresSeleccionados()" (click)="despacharPresupuestoConsolidado()">
+              <span>🚀 Despachar Presupuesto Consolidado</span>
+              <span class="badge bg-white text-success rounded-circle px-2 py-1">
+                {{ obtenerCantidadSeleccionados() }}
+              </span>
+            </button>
+          </div>
+
+          <!-- Controladores de Cierre del Modal -->
+          <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+            <button class="btn btn-outline-secondary px-4" (click)="stepActual = 1">
+              ⬅ Volver a Ficha
+            </button>
+            <button class="btn btn-secondary px-4" (click)="cerrarModal()">
               Cerrar
             </button>
           </div>
-
-
-          </div>
         </div>
+
       </div>
     </div>
   </div>
+</div>

@@ -6,6 +6,30 @@ import { Cotizacion } from '../models/cotizacion';
 
 const baseUrl = environment.apiUrl;
 
+// 🌟 1. Definimos una interfaz limpia para la nueva estructura de ofertas elegidas
+export interface OfertaElegida {
+  articulo: string;
+  proveedor: string;
+  costo: number;
+  gananciaAplicada: number;
+  precioVenta: number;
+}
+
+// 🌟 2. Definimos los dos tipos de Payload posibles
+export interface PayloadIndividual {
+  cotizacionId: string;
+  porcentajeGanancia: number;
+  precioCostoSeleccionado: number;
+  nombreProveedorSeleccionado: string;
+  canalEnvio: 'whatsapp' | 'correo';
+}
+
+export interface PayloadConsolidado {
+  cotizacionId: string;
+  canalEnvio: 'whatsapp' | 'correo';
+  ofertasElegidas: OfertaElegida[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -42,18 +66,14 @@ buscarClientePorCotizacion(cotId: string): Observable<any> {
    * Envía el payload calculado con el porcentaje de ganancia para que Node despache el correo o WhatsApp
    * POST: /api/cotizaciones/enviar-propuesta
    */
-  enviarPropuestaComercial(payload: {
-    cotizacionId: string;
-    porcentajeGanancia: number;
-    precioCostoSeleccionado: number;
-    nombreProveedorSeleccionado: string;
-    canalEnvio: 'whatsapp' | 'correo';
-  }): Observable<{ ok: boolean; msg: string; precioFinalVenta: number }> {
-    return this.http.post<{ ok: boolean; msg: string; precioFinalVenta: number }>(
-      `${this.baseUrlapi}/enviar-propuesta`, 
-      payload
-    );
-  }
+  enviarPropuestaComercial(
+  payload: PayloadIndividual | PayloadConsolidado // 🚀 CLAVE: Unión de tipos para silenciar el compilador
+): Observable<{ ok: boolean; msg: string; precioFinalVenta: number }> {
+  return this.http.post<{ ok: boolean; msg: string; precioFinalVenta: number }>(
+    `${this.baseUrlapi}/enviar-propuesta`, 
+    payload
+  );
+}
 
   /**
    * 🔍 AUXILIAR DE NEGOCIO: Operación matemática para calcular el precio final de venta.

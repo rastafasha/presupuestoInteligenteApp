@@ -47,13 +47,20 @@ export class WhatsappComponent implements OnInit, OnDestroy {
     // A) Esto reemplaza el bloque A de tu función vieja (Controla el diseño visual)
     this.statusSubscription = this.socketService.escucharEvento('whatsapp-status')
       .subscribe((data: { estado: string }) => {
+        console.log('🔌 [SOCKET-FRONT]: Estado recibido desde Node:', data.estado);
+        
         if (data.estado === 'conectado' || data.estado === 'autenticado') {
           this.estadoPasarela = 'conectado';
           this.whatsappQR = '';
         } else if (data.estado === 'esperando_qr') {
           this.estadoPasarela = 'esperando_qr';
+        } else if (data.estado === 'cargando') {
+          this.estadoPasarela = 'cargando';
         } else {
-          this.estadoPasarela = 'desconectado';
+          // Si el estado es desconectado pero ya tenemos un QR en memoria, no rompemos la vista
+          if (!this.whatsappQR) {
+            this.estadoPasarela = 'desconectado';
+          }
         }
       });
 

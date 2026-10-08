@@ -10,6 +10,8 @@ export interface Cotizacion {
   
   // 🔥 NUEVO CAMPO: Mapea el despiece exacto de Gemini de múltiples productos
   articulosDetallados: ArticuloSolicitado[]; 
+  tituloAsunto: string; 
+  fechaRecepcionOriginal: Date; 
   
   canalEntrada: 'whatsapp' | 'correo';
   proveedoresEncontrados: ProveedorEncontrado[];
