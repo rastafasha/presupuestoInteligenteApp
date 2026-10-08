@@ -1,0 +1,23 @@
+<!-- <div class="back">
+  <i class="fa fa-chevron-left" (click)="goBack()"></i>
+  <h1>{{ pageTitle }}</h1>
+</div>
+<div class="clear"></div> -->
+
+
+<div class="leftside" [style.display]="displaycomponent">
+  <!-- Page Title -->
+  <div class="pagetitle">
+    <h1><i class="bx bxs-user-account"></i> {{title}}</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/"><i class="fa fa-home"></i> Inicio</a></li>
+        <li class="breadcrumb-item active">{{title}}</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+  <div class="buton">
+    <button class="btn btn-outline-danger pull-right" href="javascript:void(0)" (click)="goBack()">Volver</button>
+  </div>
+</div>

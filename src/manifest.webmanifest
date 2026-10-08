@@ -1,0 +1,94 @@
+{
+  "name": "App Presupuesto Inteligente",
+  "short_name": "App Presupuesto Inteligente",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "orientation": "portrait",
+  "description": "App Web para organizar Clientes Klyntic",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32"
+  },
+  {
+
+      "src": "assets/icons/icon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-57x57.png",
+      "sizes": "57x57",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-60x60.png",
+      "sizes": "60x60",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+  },
+  {
+      "src": "assets/icons/icon-1024x1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable any"
+  }
+  ]
+}

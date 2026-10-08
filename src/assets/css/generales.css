@@ -1,0 +1,130 @@
+/*-cards-*/
+
+.cardhome {
+    margin-bottom: 20px;
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .11), 0 5px 15px 0 rgba(0, 0, 0, .08);
+    border: none;
+    height: 360px;
+    overflow: hidden;
+    overflow-y: scroll;
+    transition: all .3s ease-in;
+}
+
+
+/* .card:hover {
+    height: 250px;
+}*/
+
+.shadow {
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .11), 0 5px 15px 0 rgba(0, 0, 0, .08);
+}
+
+.shadowHover:hover {
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .11), 0 5px 15px 0 rgba(0, 0, 0, .08);
+}
+
+.cardhome .card-body {
+    background-image: url(../img/disruptive-tech-1600x600-c-default.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: 0% -24%;
+}
+
+.cardhome img {
+    display: block;
+    float: left;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border: 1px solid;
+}
+
+.card p i,
+.card h5 i {
+    font-size: 14px;
+    color: var(--morado);
+    margin-right: 5px;
+    height: 18px;
+    width: 12px;
+    text-align: center;
+}
+
+h3 {
+    color: var(--azul);
+    padding: 5px;
+    display: inline;
+    font-size: 16px;
+}
+
+h5 {
+    display: inline;
+    font-size: 15px;
+    color: var(--azul);
+    padding: 5px;
+}
+
+.card p {
+    line-height: 18px;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 8px;
+    font-size: 14px;
+}
+
+.clear {
+    clear: both;
+    visibility: hidden;
+    margin: 0px;
+    padding: 0px;
+    height: 0;
+}
+
+.directorio {
+    display: flex;
+}
+
+.alphabet {
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .11), 0 5px 15px 0 rgba(0, 0, 0, .08);
+}
+
+.cardhome .social {
+    display: block;
+    height: 30px;
+    margin: auto;
+    width: 60%;
+    text-align: center;
+}
+
+.cardhome .social i {
+    font-size: 16px;
+    color: var(--morado);
+    text-align: center;
+}
+
+.cardblog .card-body,
+.cardtop .card-body {
+    box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .11), 0 5px 15px 0 rgba(0, 0, 0, .08);
+}
+
+.cardblog .imgnott {
+    background-image: url(../img/topes/disruptive-tech-1600x600-c-default.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 200px;
+}
+
+.cardblog img {
+    width: 100%;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cardtop {}
+
+.botones .btn {
+    margin-right: 10px;
+}

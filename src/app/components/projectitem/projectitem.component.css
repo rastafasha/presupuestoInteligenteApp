@@ -1,0 +1,25 @@
+.topeproject{
+    display: flex;
+    flex-direction: column-reverse;
+    gap:10px;
+    padding: 5px;
+    width: 100%;
+}
+.topeproject img{
+    display: flex;
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    
+}
+.topeproject .badge{
+    display: flex;
+    height: 20px;
+    padding: 5px;
+    
+}
+
+.datos{
+    display: flex;
+    flex-direction: column;
+}

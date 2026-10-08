@@ -1,0 +1,175 @@
+<!-- ============================================================== -->
+<!-- Topbar header - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<header class="topbar">
+    <nav class="navbar top-navbar navbar-expand-md navbar-light">
+        <!-- ============================================================== -->
+        <!-- Logo -->
+        <!-- ============================================================== -->
+        <div class="navbar-header">
+            <a class="navbar-brand " href="/dashboard">
+                <!-- Logo icon --><b>
+                    <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                    <!-- Dark Logo icon -->
+                    <img src="assets/svg/logoklintic.svg" style="height:50px" alt="homepage" class="dark-logo" />
+                    <!-- Light Logo icon -->
+                    <img src="assets/svg/logoklintic.svg" style="height:50px" alt="homepage" class="light-logo" />
+                </b>
+                <!--End Logo icon -->
+                <!-- Logo text --><span>
+                    <!-- dark Logo text -->
+                    <img src="assets/svg/logo_letrasAdminColor.svg" style="height:20px" alt="homepage"
+                        class="dark-logo logot-text" />
+                    <!-- Light Logo text -->
+                    <img src="assets/svg/logo_letrasAdminblanco.svg" style="height:20px" class="light-logo logot-text"
+                        alt="homepage" /></span> </a>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Logo -->
+        <!-- ============================================================== -->
+        <div class="navbar-collapse">
+            <!-- ============================================================== -->
+            <!-- toggle and nav items -->
+            <!-- ============================================================== -->
+            <ul class="navbar-nav mr-auto">
+                <!-- This is  -->
+                <li class="nav-item"> <a class="nav-link  hidden-md-up waves-effect waves-dark nav-toggler"
+                        (click)="openMenu()"><i class="ti-menu"></i></a> </li>
+                <li class="nav-item"> <a class="nav-link  hidden-sm-down waves-effect waves-dark sidebartoggler "
+                        (click)="openMenu()"><i class="ti-menu"></i></a> </li>
+                <li class="nav-item hidden-sm-down"></li>
+            </ul>
+
+
+            <!-- ============================================================== -->
+            <!-- User profile and search -->
+            <!-- ============================================================== -->
+            <ul class="navbar-nav align-items-center gap-3 ms-auto headerright">
+                <!-- 🟢 TU COMPONENTE HIJO DE PUSH NOTIFICATIONS PERFECTAMENTE ALINEADO -->
+                <li class="nav-item d-flex align-items-center me-1 animate__animated animate__fadeIn">
+                    <app-config-alertas></app-config-alertas>
+                    <!-- Declaración nativa de tu componente independiente -->
+                </li>
+                <!-- 🔔 BLOQUE DE LA CAMPANA CON DROPDOWN DE BOOTSTRAP -->
+                <li class="nav-item dropdown">
+                    <!-- 🔔 ICONO DE LA CAMPANA CON COORDINADAS CORREGIDAS -->
+                    <a class="nav-link position-relative cursor-pointer" id="campanaNotificaciones"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell fs-4 text-secondary"></i>
+
+                        <!-- 🔥 CORRECCIÓN: Usamos style personalizado para ajustar la posición exacta sobre la campana -->
+                        <span *ngIf="contadorPendientes > 0"
+                            class="position-absolute badge rounded-pill bg-danger border border-light animate__animated animate__pulse animate__infinite"
+                            style="font-size: 0.65rem; padding: 0.35em 0.5em;  top: 9px; right: 8px;">
+                            {{ contadorPendientes }}
+                        </span>
+                    </a>
+
+                    <!-- MENÚ DESPLEGABLE FLOTANTE -->
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-0 mt-2"
+                        aria-labelledby="campanaNotificaciones"
+                        style="width: 320px; max-height: 420px; overflow: hidden; border-radius: 12px;">
+
+                        <!-- Cabecera fija del Dropdown -->
+                        <li class="bg-light p-3 border-bottom d-flex align-items-center justify-content-between">
+                            <span class="fw-bold text-dark mb-0">Notificaciones Recientes</span>
+                            <span class="badge bg-primary-light text-primary rounded-pill small">Nuevas: {{
+                                contadorPendientes }}</span>
+                        </li>
+
+                        <!-- LISTA DESPLEGABLE DINÁMICA -->
+                        <div style="max-height: 280px; overflow-y: auto;">
+
+                            <!-- Caso A: Recorriendo las alertas vivas de MongoDB -->
+                            <li *ngFor="let alerta of alertasCampana">
+                                <a class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap"
+                                    (click)="clickMarcarLeida(alerta)" style="transition: background 0.2s ease;">
+                                    <!-- Icono dinámico según el tipo de alerta -->
+                                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center"
+                                        [ngClass]="alerta.tipo === 'ANALISIS_COMPLETADO' ? 'bg-success-light text-success' : 'bg-primary-light text-primary'"
+                                        style="width: 35px; height: 35px; flex-shrink: 0;">
+                                        <i
+                                            [ngClass]="alerta.tipo === 'ANALISIS_COMPLETADO' ? 'bi bi-clipboard2-check' : 'bi bi-chat-left-dots'"></i>
+                                    </div>
+
+                                    <div class="w-100">
+                                        <span class="d-block fw-semibold text-dark small" style="line-height: 1.2;">{{
+                                            alerta.titulo }}</span>
+                                        <p class="mb-1 text-muted small mt-1"
+                                            style="font-size: 0.75rem; line-height: 1.3;">{{ alerta.mensaje }}</p>
+                                        <small class="text-secondary" style="font-size: 0.65rem;">{{ alerta.createdAt |
+                                            date:'shortTime' }}</small>
+                                    </div>
+                                </a>
+                            </li>
+
+                            <!-- Caso B: Sin alertas (Estado vacío limpio) -->
+                            <li *ngIf="alertasCampana.length === 0" class="text-center py-4 text-muted">
+                                <i class="bi bi-bell-slash fs-3 d-block mb-1 text-secondary opacity-50"></i>
+                                <span class="small d-block px-3">Bandeja de entrada al día. No hay pendientes por
+                                    revisar. ✨</span>
+                            </li>
+
+                        </div>
+
+                        <!-- BOTÓN INFERIOR DE ACCESO HISTÓRICO -->
+                        <li class="p-2 bg-light border-top text-center">
+                            <button
+                                class="btn btn-sm btn-link text-primary w-100 fw-semibold text-decoration-none small"
+                                (click)="irAListaCompleta()">
+                                👁️ Ver todo el historial
+                            </button>
+                        </li>
+
+                    </ul>
+                </li>
+                <!-- ============================================================== -->
+                <!-- Profile -->
+                <!-- ============================================================== -->
+                <li class="nav-item">
+                    <div class="btns dayNight">
+                        <i class="fa fa-lightbulb-o" (click)="darkmode('dark')"></i>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle waves-effect waves-dark" href="javascript:void(0)"
+                        (click)="openModal()" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                        <div *ngIf="!profile">
+                            <img src="./assets/images/no-image.jpg" style="width:50px; height:50px"
+                                class="rounded-circle">
+                        </div>
+                        <div *ngIf="profile">
+                            <img [src]="profile.img | imagenPipe: 'profiles'" style="width:50px; height:50px"
+                                [alt]="user.username | slice:0:10" class="rounded-circle">
+                        </div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right animated fadeInDown">
+                        <ul class="dropdown-user">
+                            <li>
+                                <div class="dw-user-box">
+                                    <!-- <div class="u-img"><img src="{{user.image}}" alt="{{user.username}}"></div> -->
+                                    <div class="u-text">
+                                        <h4>{{user.username | slice:0:10}} </h4>
+                                        <span *ngIf="user.role === 'SUPERADMIN'">Super Admin</span>
+                                        <span *ngIf="user.role === 'ADMIN'">Admin</span>
+                                        <span *ngIf="user.role === 'PARTNER'">Editor</span>
+                                        <span *ngIf="user.role === 'USER'">Invitado</span>
+                                    </div>
+                                </div>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="http://google.com" target="_blank"><i class="ti-world"></i> Ir al Landing </a>
+                            </li>
+                            <li><a (click)="logout()" style="cursor:pointer"><i class="fa fa-power-off"></i> Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<!-- ============================================================== -->
+<!-- End Topbar header -->
+<!-- ============================================================== -->

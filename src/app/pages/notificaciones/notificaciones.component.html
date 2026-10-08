@@ -1,0 +1,134 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="users">
+
+  <div class="col-xs-12">
+
+    <app-backButtn [title]="title"></app-backButtn>
+
+    <div class="clear"></div>
+
+    <section class="section dashboard">
+      <div class="container-fluid my-4 animate__animated animate__fadeIn">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h3 class="fw-bold text-dark mb-1">🗂️ Historial Central de Notificaciones</h3>
+            <p class="text-muted small mb-0">Centro de auditoría logística y solicitudes comerciales procesadas por
+              Gemini.</p>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary" (click)="cargarHistorialCompleto()" [disabled]="isLoading">
+            <i class="bi bi-arrow-clockwise"></i> Actualizar Panel
+          </button>
+        </div>
+
+        <!-- SPINNER DE CARGA -->
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-2">Cargando el historial masivo de MongoDB...</p>
+        </div>
+
+        <div *ngIf="!isLoading" class="row g-4">
+
+          <!-- 📄 COLUMNA IZQUIERDA: LISTADO MAESTRO (40%) -->
+          <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+              <div class="card-header bg-light border-bottom py-3">
+                <span class="fw-bold text-secondary">Mensajes del Sistema</span>
+              </div>
+
+              <div class="list-group list-group-flush" style="max-height: 600px; overflow-y: auto;">
+                <button *ngFor="let item of historialAlertas" (click)="seleccionarAlerta(item)"
+                  class="list-group-item list-group-item-action p-3 d-flex align-items-start gap-2 border-bottom position-relative transition-all"
+                  [ngClass]="{
+              'bg-selected': alertaSeleccionada?._id === item._id,
+              'fw-bold bg-unread': !item.leido
+            }">
+
+                  <!-- Indicador azul vertical si no está leída -->
+                  <div *ngIf="!item.leido" class="position-absolute top-0 start-0 h-100 bg-primary" style="width: 4px;">
+                  </div>
+
+                  <div class="w-100">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <span class="small text-truncate d-inline-block" style="max-width: 180px;">{{ item.titulo
+                        }}</span>
+                      <small class="text-secondary opacity-75" style="font-size: 0.7rem;">{{ item.createdAt |
+                        date:'dd/MM, h:mm a' }}</small>
+                    </div>
+                    <p class="text-muted small mb-0 text-truncate" style="max-width: 240px;">{{ item.mensaje }}</p>
+                  </div>
+                </button>
+
+                <!-- Si el historial está completamente limpio -->
+                <div *ngIf="historialAlertas.length === 0" class="text-center py-5 text-muted">
+                  <i class="bi bi-folder2-open fs-2 d-block opacity-50 mb-2"></i>
+                  <span class="small">No se han registrado eventos históricos en la base de datos.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🔍 COLUMNA DERECHA: PANEL DETALLE (60%) -->
+          <div class="col-md-7 col-lg-8">
+            <div class="card shadow-sm border-0 rounded-3 h-100 min-h-card">
+
+              <!-- Caso A: Alerta Seleccionada -->
+              <div *ngIf="alertaSeleccionada" class="card-body p-4 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+                    <div>
+                      <span class="badge mb-2 rounded-pill px-3 py-1"
+                        [ngClass]="alertaSeleccionada.tipo === 'ANALISIS_COMPLETADO' ? 'bg-success-light text-success' : 'bg-primary-light text-primary'">
+                        {{ alertaSeleccionada.tipo }}
+                      </span>
+                      <h4 class="fw-bold text-dark m-0">{{ alertaSeleccionada.titulo }}</h4>
+                    </div>
+                    <small class="text-muted">{{ alertaSeleccionada.createdAt | date:'medium' }}</small>
+                  </div>
+
+                  <div class="p-3 bg-light rounded-3 border mb-4">
+                    <h6 class="fw-bold text-secondary small mb-2">Resumen Operativo:</h6>
+                    <p class="text-dark mb-0 fs-5" style="line-height: 1.5;">{{ alertaSeleccionada.mensaje }}</p>
+                  </div>
+
+                  <div class="alert alert-info border-0 shadow-none d-flex align-items-start gap-2 rounded-3 small">
+                    <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+                    <div>
+                      <strong>Información de auditoría interna:</strong> Esta notificación fue inyectada de forma
+                      asíncrona tras la intercepción de palabras clave obligatorias. Generó registros en el CRM de
+                      clientes y la lista de precios automatizada.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Botón de salto comercial si tiene referencia -->
+                <div *ngIf="alertaSeleccionada.referenciaCotizacionId" class="border-top pt-3 text-end">
+                  <button class="btn btn-primary px-4 shadow-sm" (click)="irAlRequerimiento()">
+                    🚀 Ir a la Tabla de Cotizaciones de Diego
+                  </button>
+                </div>
+              </div>
+
+              <!-- Caso B: Estado Inicial sin Selección -->
+              <div *ngIf="!alertaSeleccionada"
+                class="card-body d-flex flex-column align-items-center justify-content-center text-center py-5 text-muted">
+                <div class="rounded-circle bg-light p-4 mb-3 text-secondary opacity-50"
+                  style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                  <i class="bi bi-envelope-open fs-1"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Visualizador de Auditoría</h5>
+                <p class="small px-5">Selecciona cualquier notificación de la columna izquierda para desplegar el log de
+                  datos detallado y saltar a las operaciones comerciales.</p>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+    </section>
+  </div>
+
+</div>
+<!--/main-->

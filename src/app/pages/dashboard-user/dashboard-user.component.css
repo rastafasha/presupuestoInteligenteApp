@@ -1,0 +1,30 @@
+.pagetitle {
+    display: flex;
+    flex-direction: row;
+}
+
+.fichasmall {
+    display: flex;
+    flex-direction: column;
+}
+
+.inffichasmall {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+@media(max-width:480px) {
+    .fichasmall {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .profile .profile-card img {
+        max-width: 70px;
+    }
+    .pagetitle {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}

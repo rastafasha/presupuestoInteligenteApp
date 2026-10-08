@@ -1,0 +1,94 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="users">
+
+    <div class="col-xs-12">
+        <div class="leftside">
+            <!-- Page Title -->
+            <div class="pagetitle">
+                <h1><i class="bx bxs-user-account"></i> {{title}}</h1>
+
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a routerLink="/"><i class="bi bi-house"></i> Inicio</a></li>
+                        <li class="breadcrumb-item"><a routerLink="/">Panel Admin</a></li>
+                        <li class="breadcrumb-item"><a routerLink="/dashboard/configuraciones">Configuraciones</a></li>
+                        <li class="breadcrumb-item active">{{title}}</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- End Page Title -->
+            <div class="buton">
+                <button class="btn btn-outline-danger pull-right" href="javascript:void(0)" (click)="goBack()">Volver</button>
+            </div>
+        </div>
+        
+        <div class="clear"></div>
+
+
+
+        <section class="section dashboard">
+
+
+            <!-- Recent Pagos -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- buscador -->
+                        <!-- <app-search></app-search> -->
+                        <!-- buscador -->
+                    </div>
+                </div>
+                <div class="card recent-sales overflow-auto">
+
+
+                    <div class="card-body">
+
+
+                        <table class="table table-borderless datatable':'table table-borderless">
+                            <thead>
+                                <tr>
+
+                                    <th>Username</th>
+                                    <th>email</th>
+                                    <th>Role</th>
+                                    <th>Role Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of users |  paginate: { itemsPerPage: count, currentPage: p }">
+                                
+                                    <td><a [routerLink]="['/dashboard/user/', user.uid]">{{user.username}}</a></td>
+
+                                    <td>{{user.email}} </td>
+                                    <td>
+                                        <span class="badge bg-dark" *ngIf="user.role === 'SUPERADMIN'">SuperAdmin</span>
+                                        <span class="badge bg-primary" *ngIf="user.role === 'ADMIN'">Admin</span>
+                                        <span class="badge bg-success" *ngIf="user.role === 'PARTNER'">Socio</span>
+                                        <span class="badge bg-danger" *ngIf="user.role === 'USER'">Invitado</span>
+                                    </td>
+                                    <td>
+                                        <select class="form-control" [(ngModel)]="user.role" (change)="cambiarRole(user)">
+                                          <option value="SUPERADMIN">Super Admin</option>
+                                          <option value="ADMIN">Admin</option>
+                                          <option value="PARTNER">Socio</option>
+                                          <option value="USER">Invitado</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+
+
+                    </div>
+
+                </div>
+            </div>
+            <!-- End Recent Pagos -->
+
+        </section>
+
+    </div>
+</div>
+<!--/main-->

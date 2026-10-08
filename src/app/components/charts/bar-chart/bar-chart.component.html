@@ -1,0 +1,45 @@
+<div class="card border-radio shadow p-3">
+  <!-- Filters -->
+  <div class="row mb-3" *ngIf="!isLoading">
+    <div class="col-md-4">
+      <label class="form-label">Mes (Opcional):</label>
+      <select class="form-select" [(ngModel)]="selectedMonth" (change)="onMonthChange(selectedMonth!)">
+        <option *ngFor="let month of months; let i = index" [value]="i + 1" [selected]="selectedMonth === (i + 1)">
+          {{month}}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Año:</label>
+      <select class="form-select" [(ngModel)]="selectedYear" (change)="onYearChange(selectedYear)">
+        <option *ngFor="let year of years" [value]="year">{{year}}</option>
+      </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+      <button class="btn btn-primary" (click)="loadData()" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{isLoading ? 'Cargando...' : 'Actualizar'}}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-4">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <!-- Chart Container -->
+  <div class="mt-4" style="position: relative; min-height: 300px;">
+    <!-- Mensaje de "Sin datos" -->
+    <div *ngIf="!reportData && !isLoading" class="text-center py-4 text-muted">
+      <p>Sin datos para mostrar en este período</p>
+      <small>{{ months[selectedMonth - 1] }} {{ selectedYear }}</small>
+    </div>
+
+    <!-- Canvas SIEMPRE presente, solo se oculta visualmente -->
+    <canvas id="barChart" [hidden]="!reportData || isLoading"></canvas>
+  </div>
+</div>

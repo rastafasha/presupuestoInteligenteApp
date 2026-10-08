@@ -1,0 +1,3 @@
+.datatable tbody tr td:first-child {
+    width: 20px;
+}

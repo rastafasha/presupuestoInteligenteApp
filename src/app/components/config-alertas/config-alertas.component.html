@@ -1,0 +1,21 @@
+<!-- src/app/components/config-alertas/config-alertas.component.html -->
+<div class="push-notification-strip m-0 p-0 border-0 bg-transparent shadow-none d-flex align-items-center gap-3">
+  
+  <!-- Bloque de textos nativo de tu franja Klyntic -->
+  <div class="push-text text-end">
+    <strong style="font-size: 0.82rem; display: block; line-height: 1.2;">Notificaciones Push</strong>
+    <span style="font-size: 0.7rem; display: block; opacity: 0.8;">Avisos comerciales en tiempo real</span>
+  </div>
+  <!-- El Switch de Diseño Exclusivo de Klyntic con tu slider redondo -->
+<div class="switch-wrapper">
+  <div *ngIf="pushService.isProcessing$ | async" class="mini-spinner"></div>
+  <label class="switch">
+    <input 
+  type="checkbox" 
+  [checked]="pushService.isSubscribed$ | async"
+  [disabled]="pushService.isProcessing$ | async"
+  (change)="togglePush()">
+    <span class="slider round"></span>
+  </label>
+</div>
+</div>

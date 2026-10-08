@@ -1,0 +1,45 @@
+.contenido{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap:15px
+}
+
+.item{
+    display: flex;
+    align-self: baseline;
+    
+}
+
+
+.busc{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-group-append,
+.selecttyp,
+.inputb{
+    display: flex;
+}
+
+.doctor-refresh{
+    border-radius: 100px;
+}
+
+@media (max-width:768px) {
+    .contenido{
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+@media (max-width:480px) {
+    .contenido{
+        grid-template-columns: 1fr ;
+    }
+
+}

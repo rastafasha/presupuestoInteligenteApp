@@ -1,0 +1,135 @@
+<!-- =======| Main |======= -->
+<div class="container " id="main" class="main" role="main" style="height: calc(74vh);">
+
+    <!-- Page Title -->
+    <div class="pagetitle animated fadeIn mb-3">
+        <div class="left">
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/"><i class="fa fa-home"></i> Inicio</a></li>
+                    <!-- <li class="breadcrumb-item active" *ngIf="user.role === 'PARTNER'">Admin Socio</li> -->
+                    <!-- <li class="breadcrumb-item active" *ngIf="user.role === 'USER'">Admin Invitado</li> -->
+                </ol>
+            </nav>
+        </div>
+        <div class="right shadow animated fadeIn">
+            <p>Bienvenido: </p>
+            <span class="badge bg-success" *ngIf="user.role === 'PARTNER'">Socio</span>
+            <span class="badge bg-danger" *ngIf="user.role === 'USER'">Invitado</span>
+        </div>
+    </div>
+    <!-- End Page Title -->
+
+    <!-- banners planes -->
+    <!-- <div *ngIf="userprofile.role == 'GUEST'">
+        <app-bannerplanes></app-bannerplanes>
+    </div> -->
+
+    <!-- banners planes -->
+
+
+    <div class="clear"></div>
+    <!-- acceso iconos -->
+    <div *ngIf="user.profile">
+        <app-menuiconos></app-menuiconos>
+
+    </div>
+
+    <!-- acceso iconos -->
+    <div class="clear"></div>
+    <section class="section dashboard">
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-4 col-xl-4">
+
+                <div class="card profile shadow">
+
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start">
+                                <h6>Operaciones</h6>
+                            </li>
+
+                            <li><a class="dropdown-item" [routerLink]="['/dashboard/profile/', user.uid]">Mi Cuenta</a></li>
+
+                        </ul>
+                    </div>
+                    <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+                        <!-- <div *ngIf="!userprofile.directories.image">
+                            <img src="assets/images/no-image.jpg" class="rounded-circle">
+                        </div>
+                        <div *ngIf="userprofile.directories.image">
+                            <img [src]="userprofile.directories[0].image | imagenPipe: 'users'" [alt]="user.username" class="rounded-circle">
+                        </div> -->
+                        <h2>Hola, {{user.username}}!</h2>
+
+                        <p>Usuario desde:<br>{{user.createdAt | date:'MMM d, y, h:mm:ss a'}}</p>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-xs-12 col-sm-8 col-xl-8">
+
+                <div class="card  animated fadeInUp shadow">
+                    <div class="card-body pt-3">
+                        <!-- Bordered Tabs -->
+                        <ul class="nav nav-tabs nav-tabs-bordered">
+                            <li class="nav-item" *ngIf="user.role == 'EDITOR'">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#verifyProfile">Bienvenido</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link " data-bs-toggle="tab" data-bs-target="#news">Actualidad</button>
+                            </li>
+
+                            <!-- <div *ngIf="user.role === 'MEMBER'">
+
+                            </div> -->
+
+
+                        </ul>
+                        <div class="tab-content pt-2">
+                            <div class="tab-pane fade show  active verifyProfile" id="verifyProfile">
+                                <div>
+                                    <h4>Bienvenido!</h4>
+                                    <div *ngIf="user.profile === null ">
+                                        <p>Por favor rellena la iformación para saber mas de tí</p>
+                                        <!-- <a [routerLink]="['/dashboard/condiciones/', user.uid]">
+                                            <button class="btn btn-outline-success">Llenar Perfil</button>
+                                        </a> -->
+                                    </div>
+                                    <div *ngIf="user.profile">
+                                        <p>Puedes Editar!</p>
+                                    </div>
+
+                                </div>
+                                <div *ngIf="user.role == 'PARTNER'">
+                                    <!-- <app-planesyproductos></app-planesyproductos> -->
+                                    <app-news></app-news>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade show  news" id="news">
+                                <br />
+                            </div>
+
+
+
+
+                        </div>
+                        <!-- End Bordered Tabs -->
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <app-project-list *ngIf="user.role === 'PARTNER'"  [displaycomponent]="displaycomponent" [limit]="limit" [userprofile]="user"></app-project-list>
+        
+    </section>
+
+
+</div>
+<!--/main-->

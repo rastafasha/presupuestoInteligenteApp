@@ -1,0 +1,81 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="users">
+
+  <div class="col-xs-12">
+
+    <app-backButtn [title]="title"></app-backButtn>
+
+    <div class="clear"></div>
+
+    <section class="section dashboard">
+
+      <div class="container my-5 animate__animated animate__fadeIn">
+        <div class="row justify-content-center">
+          <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0 rounded-3 overflow-hidden" style="max-width: 450px; margin: 0 auto;">
+  
+  <!-- Encabezado de la Tarjeta (El verde que ya tienes impecable) -->
+  <div class="card-header bg-success text-white text-center py-3">
+    <h5 class="mb-0 fw-bold">Conectar Teléfono</h5>
+  </div>
+
+  <div class="card-body text-center p-4">
+
+    <!-- 🟡 ESTADO A: DESCONECTADO (Muestra tu botón morado de disparo) -->
+    <div *ngIf="estadoPasarela === 'desconectado' || estadoPasarela === 'cargando'">
+      <div class="alert alert-danger border-0 small py-2 mb-3" role="alert">
+        ⚠️ Tu canal está apagado.
+      </div>
+      
+      <!-- Tu botón morado original -->
+      <button class="btn btn-primary px-4 py-2 fw-semibold" (click)="solicitarConexion()" [disabled]="estadoPasarela === 'cargando'">
+        {{ estadoPasarela === 'cargando' ? 'Iniciando servicio...' : 'Generar Código QR' }}
+      </button>
+    </div>
+
+    <!-- 🟢 ESTADO B: ESPERANDO ESCANEO (Aquí es donde se despliega tu QR en Base64) -->
+    <!-- Modificado para que evalúe 'esperando_qr' y verifique que la imagen ya se fabricó -->
+    <div *ngIf="estadoPasarela === 'esperando_qr'" class="animate__animated animate__fadeIn mt-2">
+      <h6 class="fw-bold text-dark mb-3">Vincular Dispositivo Comercial</h6>
+      
+      <ol class="text-start text-muted small mb-4 px-3" style="line-height: 1.5; font-size: 0.8rem;">
+        <li>Abre <strong>WhatsApp</strong> en el teléfono celular.</li>
+        <li>Ve a <strong>Dispositivos vinculados</strong> y toca <strong>Vincular un dispositivo</strong>.</li>
+        <li>Apunta la cámara del celular hacia esta pantalla para escanear el código.</li>
+      </ol>
+      
+      <!-- Contenedor dinámico de la imagen -->
+      <div class="p-3 bg-light rounded d-inline-block border shadow-sm mb-3" *ngIf="whatsappQR">
+        <!-- Inyectamos tu función purificadora sobre la variable que ya tiene el Base64 listo -->
+        <img [src]="sanitizarQR(whatsappQR)" alt="Código QR WhatsApp" class="img-fluid rounded" style="width: 220px; height: 220px;">
+      </div>
+
+      <div class="alert alert-warning border-0 small d-flex align-items-center justify-content-center gap-2 m-0 py-2" style="font-size: 0.8rem;">
+        <span class="spinner-grow spinner-grow-sm text-warning" role="status"></span>
+        Esperando escaneo desde el dispositivo móvil...
+      </div>
+    </div>
+
+    <!-- 🔵 ESTADO C: CONECTADO EXITOSAMENTE -->
+    <div *ngIf="estadoPasarela === 'conectado'" class="py-4 text-center animate__animated animate__zoomIn">
+      <div class="text-success mb-2" style="font-size: 2.5rem;">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h5 class="text-success fw-bold">¡Línea Comercial Activada!</h5>
+      <p class="text-muted small px-3">El sistema está operativo. La IA se encuentra escuchando requerimientos médicos en segundo plano.</p>
+      <span class="badge bg-success px-3 py-2 rounded-pill small">Sistema Online</span>
+    </div>
+
+  </div>
+</div>
+
+          </div>
+        </div>
+      </div>
+
+
+    </section>
+  </div>
+
+</div>
+<!--/main-->

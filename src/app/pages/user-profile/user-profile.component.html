@@ -1,0 +1,206 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="profile">
+
+    <div class="col-xs-12">
+        <div class="leftside">
+            <!-- Page Title -->
+            <div class="pagetitle">
+                <h1><i class="bx bxs-user-account"></i> {{title}}</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a routerLink="/"><i class="fa fa-home"></i> Inicio</a></li>
+                        <li class="breadcrumb-item active">{{title}}</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- End Page Title -->
+            <div class="buton">
+                <button class="btn btn-outline-danger pull-right" href="javascript:void(0)"
+                    (click)="goBack()">Volver</button>
+            </div>
+        </div>
+
+        <div class="clear"></div>
+
+        <section class="section profile">
+            <div class="row">
+                <div class="col-xl-3">
+
+                    <div class="card">
+                        <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                           
+                            <div *ngIf="profile">
+                                <img [src]="profile.img | imagenPipe: 'profiles'" class="rounded-circle">
+                            </div>
+
+                            <h3>{{usuario.username}}</h3>
+                            <p>{{usuario.email}}</p>
+                            <h3>
+                                <span class="badge bg-dark" *ngIf="usuario.role === 'SUPERADMIN'">SuperAdmin</span>
+                                <span class="badge bg-primary" *ngIf="usuario.role === 'ADMIN'">Admin</span>
+                                <span class="badge bg-success" *ngIf="usuario.role === 'PARTNER'">Socio</span>
+                                <span class="badge bg-secondary" *ngIf="usuario.role === 'USER'">Invitado</span>
+                            </h3>
+
+                            <a routerLink="/dashboard/rolesconf">
+                                <button class="btn btn-outline-primary btn-sm">Modificar Rol</button>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-xl-9">
+
+                    <div class="card">
+                        <div class="card-body pt-3">
+                            <!-- Bordered Tabs -->
+                            <ul class="nav nav-tabs nav-tabs-bordered">
+
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="tab"
+                                        data-bs-target="#detalle">Detalles</button>
+                                </li>
+                                <!-- <li class="nav-item">
+                                    <button class="nav-link " data-bs-toggle="tab" data-bs-target="#historial">Historial
+                                        Compras</button>
+                                </li> -->
+
+
+
+
+                            </ul>
+                            <div class="tab-content pt-2">
+                                <div class="tab-pane fade show active detail  pt-3" id="detalle">
+
+
+                                    <div *ngIf="!profile">
+                                        <p>Complete su perfil</p>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div *ngIf="profile">
+                                            <div class="row">
+                                                <div class="col-xs-6 col-sm-6 col-md-4 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-person-circle"></i>
+                                                        Nombre</div>
+                                                    <div class="col-12  info">{{profile.first_name}}</div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-4 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-person-circle"></i>
+                                                        Apellido</div>
+                                                    <div class="col-12  info">{{profile.last_name}}</div>
+                                                </div>
+
+                                            </div>
+                                            <hr>
+
+                                            <div class="row">
+
+                                                <div class="col-xs-6 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-telephone"></i> Móvil
+                                                    </div>
+
+                                                    <div class="col-12  info">
+                                                        <a href="tel:{{profile.telmovil}}" target="_blank">
+                                                            {{profile.telmovil}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-telephone"></i> Oficina |
+                                                        Home</div>
+                                                    <div class="col-12  info">
+                                                        <a href="tel:{{profile.telhome}}" target="_blank">
+                                                            {{profile.telhome}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-telephone"></i> Pais
+                                                    </div>
+                                                    <div class="col-12 info">{{profile.pais.code}}</div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-geo"></i> Estado</div>
+                                                    <div class="col-12  info">{{profile.estado}}</div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="bi bi-file-text"></i> Dirección
+                                                    </div>
+                                                    <div class="col-12  info">
+                                                        <p>{{profile.direccion}}</p>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="fa fa-facebook"></i> Facebook
+                                                    </div>
+                                                    <div class="col-12 info">
+                                                        <a href="https://facebook.com/{{profile.facebook}}"
+                                                            target="_blank" rel="noopener noreferrer">
+                                                            {{profile.facebook}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="fa fa-instagram"></i> Instagram
+                                                    </div>
+                                                    <div class="col-12  info">
+                                                        <a href="https://instagram.com/{{profile.instagram}}"
+                                                            target="_blank" rel="noopener noreferrer">
+                                                            {{profile.instagram}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="fa fa-linkedin"></i> Linkedin
+                                                    </div>
+                                                    <div class="col-12  info">
+                                                        <a href="https://linkedin.com/{{profile.linkedin}}"
+                                                            target="_blank" rel="noopener noreferrer">
+                                                            {{profile.linkedin}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-6 col-md-3 b-r">
+                                                    <div class="col-12  label"><i class="fa fa-twitter"></i> Twitter
+                                                    </div>
+                                                    <div class="col-12  info">
+                                                        <a href="https://linkedin.com/{{profile.twitter}}"
+                                                            target="_blank" rel="noopener noreferrer">
+                                                            {{profile.twitter}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="clear"></div>
+                                </div>
+
+
+
+
+
+
+                            </div>
+                            <!-- End Bordered Tabs -->
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+<!--/main-->

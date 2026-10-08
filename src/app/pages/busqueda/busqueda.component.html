@@ -1,0 +1,121 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="users">
+
+    <div class="col-xs-12">
+        <div class="leftside">
+            <div class="col-xs-12 col-sm-11">
+                <!-- buscador -->
+                <form class="form-horizontal">
+                    <div class="p-1 bg-light rounded rounded-pill shadow-sm mb-4">
+                        <div class="input-group">
+                            <input type="search" name="search" type="text" class="form-control col-xs-12" placeholder="Buscar.." [(ngModel)]="query" aria-describedby="button-addon1" class="form-control border-0 bg-light">
+                            <div class="input-group-append">
+                                <button id="button-addon1" type="submit" class="btn btn-link text-primary" (click)="search()" name="submit" data-toggle="tooltip" title="mostrar todos"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- buscador -->
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                <div class="text-right">
+                    <button class="btn btn-outline-danger pull-right" href="javascript:void(0)" (click)="goBack()">Volver</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="clear"></div>
+
+        <section class="section dashboard">
+            <div class="row animated fadeIn fast">
+                <!---usuarios-->
+                <div class="col-6 ">
+                    <div class="card shadow-sm ">
+                        <div class="card-body">
+                            <h4 class="card-title">Usuarios</h4>
+                            <div class="alert alert-info" *ngIf="!usuarios">
+                                <p class="mb-0"> No hay usuarios con ese termino</p>
+                            </div>
+                            <div class="table-responsive" *ngIf="usuarios">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let usuario of usuarios" class="animated fadeIn fast">
+                                            <!-- <td>
+                                                <img [src]="usuario.img | imagenPipe: 'usuarios' " class="avatar ">
+                                            </td> -->
+                                            <td>
+                                                <a [routerLink]="['/dashboard/user/', usuario.uid]">{{usuario.username}}</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---Projectos-->
+                <div class="col-6 ">
+                    <div class="card shadow-sm ">
+                        <div class="card-body">
+                            <h4 class="card-title">Projectos</h4>
+                            <div class="alert alert-info" *ngIf="!clientes">
+                                <p class="mb-0"> No hay Projectos con ese término</p>
+                            </div>
+                            <div class="table-responsive" *ngIf="clientes">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let cliente of clientes" class="animated fadeIn fast">
+                                            
+                                            <td><a [routerLink]="['/dashboard/cliente/edit', cliente._id]">{{cliente.name}}</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---categorias-->
+                <div class="col-6 ">
+                    <div class="card shadow-sm ">
+                        <div class="card-body">
+                            <h4 class="card-title">Categorias</h4>
+                            <div class="alert alert-info" >
+                                <p class="mb-0"> No hay categorias con ese termino</p>
+                            </div>
+                            <div class="table-responsive" >
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let categoria of specialities" class="animated fadeIn fast">
+                                            
+                                            <td><a [routerLink]="['/dashboard/category/edit', categoria._id]">{{categoria.name}}</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+</div>
+<!--/main-->
+
+

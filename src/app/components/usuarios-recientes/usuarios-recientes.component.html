@@ -1,0 +1,34 @@
+<div class="card-body">
+
+    <table class="table table-borderless table-responsive">
+        <thead>
+            <tr>
+                <th scope="col">Usuario </th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Fecha</th>
+            </tr>
+        </thead>
+        <tbody *ngFor="let user of users | slice: 0:5">
+            <tr>
+
+                <th scope="row"><a [routerLink]="['/dashboard/user/', user.id]">{{user.username | slice: 0:10}}...</a></th>
+                <th><a [routerLink]="['/dashboard/user/', user.id]">{{user.email | slice: 0:10}}...</a></th>
+                <th>
+                    <span class="badge bg-dark" *ngIf="user.role === 'SUPERADMIN'">SuperAdmin</span>
+                    <span class="badge bg-primary" *ngIf="user.role === 'ADMIN'">Admin</span>
+                    <span class="badge bg-success" *ngIf="user.role === 'EDITOR'">Editor</span>
+                    <span class="badge bg-success" *ngIf="user.role === 'MEMBER'">Miembro</span>
+                    <span class="badge bg-secondary" *ngIf="user.role === 'USER'">Invitado</span>
+                </th>
+                <th>{{user.createdAt | date:'MMM d, y, h:mm:ss a'}}</th>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="col-xs-12 col-sm-3">
+        <button class="btn btn-primary" routerLink="/dashboard/users">
+    Ver todos
+  </button>
+    </div>
+</div>

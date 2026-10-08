@@ -1,0 +1,325 @@
+.main {
+    width: 350px;
+    height: 90vh;
+    background: red;
+    overflow: hidden;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0px -30px 50px #000;
+    background: #353888;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, var(--azulclaro) 0%, var(--azul) 100%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, var(--azulclaro) 0%, var(--azul) 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, var(--azulclaro) 0%, var(--azul) 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#353888', endColorstr='#774477', GradientType=0);
+    /* IE6-9 */
+}
+
+
+/* nuevo */
+
+.loginregister {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Jost', sans-serif;
+    background: linear-gradient(to bottom, #0f0c29, var(--azul), var(--azulclaro));
+}
+
+#chk {
+    display: none;
+}
+
+.signup {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.signup label {
+    color: var(--white);
+    justify-content: center;
+    display: flex;
+    margin: -45px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+label {
+    color: var(--white);
+    justify-content: center;
+    display: flex;
+    margin: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+.login label {
+    justify-content: center;
+    display: flex;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 0;
+    transition: .5s ease-in-out;
+}
+
+.signup label h1 {
+    color: var(--white);
+    font-size: 2.3em;
+    justify-content: center;
+    display: flex;
+    margin: 60px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+.signup p {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    display: flex;
+    width: 80%;
+    margin: auto;
+    flex-direction: row;
+    align-content: center;
+    justify-content: flex-start;
+    color: var(--white);
+}
+
+.signup p span {
+    color: red;
+}
+
+.signup label p {
+    color: var(--white);
+    font-size: 14px;
+    justify-content: center;
+    display: flex;
+    margin: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+}
+
+.signup .form-control {
+    background: #e0dede;
+    justify-content: center;
+    display: flex;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    margin: auto;
+    width: 80%;
+    margin-bottom: 20px;
+    transition: .5s ease-in-out;
+}
+
+.signup .form-control,
+.login .form-control {
+    background: #e0dede;
+    justify-content: center;
+    display: flex;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    margin: auto;
+    width: auto;
+    margin-bottom: 20px;
+    transition: .5s ease-in-out;
+}
+
+input {
+    justify-content: center;
+    display: flex;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+}
+
+.login input {
+    justify-content: center;
+    display: flex;
+    border-radius: 5px;
+}
+
+button {
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: center;
+    display: block;
+    color: var(--white);
+    background: var(--azulclaro);
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 10px;
+    outline: none;
+    border: 1px solid var(--white);
+    border-radius: 5px;
+    transition: .2s ease-in;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--azulclaro);
+}
+
+.login {
+    height: 500px;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    background: #eee;
+    border-radius: 60% / 10%;
+    transform: translateY(50px);
+    transition: .8s ease-in-out;
+    justify-content: center;
+    align-content: center;
+}
+
+.login label {
+    color: var(--azulclaro);
+    transform: scale(.6);
+}
+
+.login label h1 {
+    color: var(--azulclaro);
+    font-size: 2.3em;
+    justify-content: center;
+    display: flex;
+    margin-bottom: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
+    transform: translate(0px, -10px)
+}
+
+.rememb {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    color: #fff;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#chk:checked~.login {
+    transform: translateY(-400px);
+}
+
+#chk:checked~.login label {
+    transform: scale(1);
+}
+
+#chk:checked~.login label h1 {
+    transform: translate(0px, 30px);
+}
+
+#chk:checked~.signup label {
+    transform: scale(.6);
+}
+
+#chk:checked~.signup .form-control {
+    transform: scale(.5);
+    transform: translateY(50px);
+}
+
+.main img {
+    width: 30%;
+    height: auto;
+    margin: auto;
+    display: flex;
+    margin-top: 30px;
+}
+
+.signup .checkbox {
+    display: flex;
+    align-content: center;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+@media(min-width:768px) and (max-width:990px) {
+    .main {
+        width: 350px;
+        height: 600px;
+        border-radius: 0px;
+    }
+}
+
+@media(min-width:990px) and (max-width:1200px) {
+    .main {
+        width: 350px;
+        height: 600px;
+        border-radius: 0px;
+    }
+}
+
+@media(min-width:1200px)  {
+    .main {
+        width: 350px;
+        height: 600px;
+        border-radius: 0px;
+    }
+}
+
+@media(min-width:1260px)  {
+    .main {
+        width: 350px;
+        height: 600px;
+        border-radius: 0px;
+    }
+}
+@media(min-width:768px) {
+    .loginregister {
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    /* .main {
+        width: 350px;
+        height: 76vh;
+        border-radius: 0px;
+    } */
+    .main img {
+        width: 25%;
+    }
+    .login {
+        height: 100vh;
+        transform: translateY(20px);
+        border-radius: 140% / 10%;
+    }
+    #chk:checked~.login {
+        transform: translateY(-390px);
+    }
+}
+
+@media(max-width:375px) {
+    #chk:checked~.login {
+        transform: translateY(-330px);
+    }
+    .login {
+        height: 580px;
+    }
+
+}
+
+#google-btn{
+    width: 100%;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}

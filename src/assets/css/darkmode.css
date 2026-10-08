@@ -1,0 +1,238 @@
+.dark {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+.dark .sidebar-nav .nav-link {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+.dark .sidebar-nav .nav-link.collapsed i {
+    color: var(--white);
+}
+
+.dark .header .toggle-sidebar-btn,
+.dark .logo span,
+.dark .pagetitle,
+.dark .footer .copyright,
+.dark .pagetitle h1,
+.dark .profile-card,
+.dark .card-title,
+.dark .table,
+.dark .header-nav .nav-profile {
+    color: var(--white) !important;
+}
+
+.dark .table thead {
+    background: var(--black) !important;
+}
+
+.dark .card,
+.dark .acces-icons .icontext {
+    background: rgba(0, 0, 0, 0.4);
+    color: var(--white) !important;
+}
+
+.dark .pagetitle .right {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    color: var(--white) !important;
+}
+
+.dark .acces-icons .icontext i,
+.dark .acces-icons .icontext h3 {
+    color: var(--white) !important;
+}
+
+.dark p,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark b,
+.dark label,
+.dark .nav-tabs-bordered .nav-link,
+.dark .profile .profile-overview .label,
+.dark label i {
+    color: var(--white);
+}
+
+.dark .dropdown-menu {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.dark .dolarvzla {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .instruccioness {
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .instruccioness .info {
+    background: linear-gradient(to right, var(--black), var(--black), transparent);
+}
+
+.dark .header,
+.dark .sidebar {
+    background: var(--black);
+    box-shadow: 0px 2px 20px rgb(255 255 255 / 10%) !important;
+}
+
+.dark .shadow {
+    box-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.15) !important;
+}
+
+.sidebar-nav .nav-link {
+    background: transparent !important;
+}
+
+.dark .nav-tabs-bordered .nav-link.active {
+    color: var(--azul);
+}
+
+.btns {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btns ion-icon {
+    font-size: 1.5em;
+    color: var(--black);
+}
+
+.btns ion-icon:nth-child(2) {
+    display: none;
+}
+
+.btns .menuToggle ion-icon {
+    font-size: 3em;
+}
+
+.btns.active ion-icon:nth-child(2) {
+    display: block;
+}
+
+.btns.active ion-icon:nth-child(1) {
+    display: none;
+}
+
+body .dark {
+    background-color: var(--black);
+}
+
+
+/* acordion */
+
+.dark .accordion-button,
+.dark .accordion-body {
+    color: var(--white);
+    background-color: var(--black);
+}
+
+.dark .loginregister {
+    background: var(--black) !important;
+}
+
+.dark .loginregister .main {
+    background: var(--black) !important;
+    border: 1px solid var(--white) !important;
+}
+
+.dark .swal2-popup.swal2-toast {
+    background: var(--black);
+}
+
+.dark .profile .profile-edit label {
+    font-weight: 600;
+    color: var(--white);
+}
+
+
+/* cart */
+
+.dark .header__cart img.ligth {
+    display: none;
+}
+
+.dark .header__cart img.darker {
+    display: block;
+}
+
+.dark .header__cart--notification {
+    background-color: var(--white);
+    color: var(--black);
+}
+
+.dark .cart-modal--active {
+    background-color: var(--black);
+    color: var(--white);
+}
+
+.dark .cart-modal__price span {
+    color: var(--white);
+}
+
+.dark .profile .profile-card .social-links a {
+    color: var(--white);
+}
+
+.dark .historial ul li a {
+    color: var(--white) !important;
+}
+
+.dark .historial ul li a:hover {
+    color: var(--white) !important;
+    background-color: var(--black) !important;
+}
+
+.dark .page-wrapper,
+.dark .footer {
+    background-color: var(--black);
+}
+
+.dark .page-wrapper {
+    background-color: var(--black);
+}
+
+.dark .footer small {
+    color: var(--white) !important;
+}
+
+.dark .logo-text-dark {
+    display: none;
+}
+
+.dark .logo-text-light {
+    display: block;
+}
+
+.dark .card-no-border .left-sidebar,
+.dark .card-no-border .sidebar-nav {
+    background-color: var(--black) !important;
+    background: var(--black) !important;
+}
+
+.dark .modal-body, .dark .modal-footer, .dark .modal-header {
+    background-color: var(--black) !important;
+}
+.dark .modal-title, .dark .btn-close {
+    color: var(--white) !important;
+}
+
+.dark .modal-content, .dark .modal-footer{
+    background-color: var(--black) !important;
+    background: var(--black) !important;
+}
+.dark .modal-content .modal-header .btn-close{
+    color: var(--white) !important;
+}
+.dark .form-group label{
+    color: var(--white) !important;
+}

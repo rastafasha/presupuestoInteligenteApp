@@ -1,0 +1,50 @@
+.chart{
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+
+    & .advanced-pie-legend{
+        display: flex;
+
+    }
+
+    & .legend-items-container{
+        display: flex;
+        ;
+    }
+
+    & .pie {
+        display: flex;
+    }
+
+    & .advanced-pie-legend-wrapper{}
+}
+
+@media (max-width:768px) {
+    .chart{
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+
+    & .ngx-charts-outer{
+        width: 100vw !important;
+        height: 100vh !important;
+    }
+
+    & .advanced-pie-legend{
+        display: flex;
+
+    }
+
+    & .legend-items-container{
+        display: flex;
+        ;
+    }
+
+    & .pie {
+        display: flex;
+    }
+
+    & .advanced-pie-legend-wrapper{}
+}
+}

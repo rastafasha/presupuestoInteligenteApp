@@ -1,0 +1,42 @@
+<ng-template #loading>
+    <div id="contenedor_carga">
+        <div id="carga"></div>
+    </div>
+</ng-template>
+
+<div *ngIf="user.role === 'SUPERADMIN'|| user.role === 'ADMIN' ">
+    <div class="acces-icons animated fadeIn container">
+        <!-- <a class="nav-link collapsed cursor" routerLink="/dashboard/buscar">
+
+            <div class="icontext shadow">
+                <i class="fa fa-search"></i>
+                <h3>Buscar</h3>
+            </div>
+        </a> -->
+        
+        <a class="nav-link collapsed cursor" routerLink="/dashboard/clients">
+            <div class="icontext shadow">
+                <i class="fa fa-folder"> </i>
+                <h3>Clientes</h3>
+            </div>
+        </a>
+        
+       
+        <a class="nav-link collapsed cursor" routerLink="/dashboard/users">
+
+            <div class="icontext shadow">
+                <i class="fa fa-users"></i>
+                <h3>Usuarios</h3>
+            </div>
+        </a>
+        
+        <a class="nav-link collapsed cursor" routerLink="/dashboard/roles">
+
+            <div class="icontext shadow">
+                <i class="fa fa-cogs"> </i>
+                <h3>Roles</h3>
+            </div>
+        </a>
+
+    </div>
+</div>

@@ -1,0 +1,111 @@
+<!-- =======| Main |======= -->
+<div class="container animated fadeInUp" id="main" class="main" role="main" name="users">
+
+    <div class="col-xs-12">
+       <app-backButtn [title]="title"></app-backButtn>
+        <div class="clear"></div>
+        <section class="section dashboard">
+
+            <!-- Bordered Tabs -->
+            <ul class="nav nav-tabs nav-tabs-bordered">
+
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#news">Usuarios</button>
+                </li>
+
+                <!-- <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#recentPayments">Editores</button>
+                </li> -->
+            </ul>
+            <div class="tab-content pt-2">
+
+                <div class="tab-pane fade show active news" id="news">
+                    <br />
+                    <!-- usuarios -->
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <!-- buscador -->
+                                <form class="form-horizontal">
+                                    <div class="p-1 bg-light rounded rounded-pill shadow-sm mb-4">
+                                        <div class="input-group">
+                                            <input type="search" name="search" type="text" class="form-control col-xs-12" placeholder="Buscar.." [(ngModel)]="query" aria-describedby="button-addon1" class="form-control border-0 bg-light">
+                                            <div class="input-group-append">
+                                                <button id="button-addon1" type="submit" class="btn btn-link text-primary" (click)="search()" name="submit" data-toggle="tooltip" title="mostrar todos"><i class="fa fa-search"></i></button>
+                                                <a href="javascript:;" (click)="PageSize()"
+                                            class="btn btn-primary doctor-refresh ms-2 "><i
+                                                class="fa fa-refresh"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!-- buscador -->
+                            </div>
+                        </div>
+                        <div class="card recent-sales overflow-auto">
+
+                            <div class="card-body">
+
+                                <table [ngClass]="loading? 'table table-borderless datatable':'table table-borderless'">
+                                    <thead>
+                                        <tr>
+
+                                            <!-- <th>Imagen</th> -->
+                                            <th>Usuario</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Auth</th>
+                                            <th class="text-nowrap">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let user of usuarios |  paginate: { itemsPerPage: count, currentPage: p }">
+                                        
+                                            <td><a [routerLink]="['/dashboard/user/', user.uid]">{{user.username}}</a> </td>
+                                            <td>{{user.email}}</td>
+                                            <td>
+                                                <!-- {{user.role }}  -->
+                                                <span class="badge bg-dark" *ngIf="user.role === 'SUPERADMIN'">SuperAdmin</span>
+                                                <span class="badge bg-primary" *ngIf="user.role === 'ADMIN'">Admin</span>
+                                                <span class="badge bg-success" *ngIf="user.role === 'PARTNER'">Socio</span>
+                                                <span class="badge bg-danger" *ngIf="user.role === 'USER'">Invitado</span>
+                                            </td>
+                                            <td>
+                                                <span *ngIf="user.google" class="label label-danger">Google</span>
+                                                <span *ngIf="!user.google" class="label label-info">Email</span>
+                                            </td>
+
+                                            <td class="text-nowrap text-center">
+
+                                                <a [routerLink]="['/dashboard/user/edit', user.uid]" class="cursor" data-toggle="tooltip" data-original-title="Edit">
+                                                    <div class="btn btn-success"><i class="fa fa-edit"></i></div>
+                                                </a>
+                                                <a (click)="eliminarUser(user.uid)" class="cursor" data-toggle="tooltip" data-original-title="Borrar">
+                                                    <div class="btn btn-danger"><i class="fa fa-trash"></i></div>
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                                <pagination-controls (pageChange)="p = $event"></pagination-controls>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!-- End usuarios -->
+                </div>
+
+
+            </div>
+            <!-- End Bordered Tabs -->
+
+        </section>
+    </div>
+
+</div>
+<!--/main-->
