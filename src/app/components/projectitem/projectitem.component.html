@@ -1,7 +1,6 @@
  <div class="card shadow-sm rounded">
     <div class="card-body">
       <div class="topeproject">
-        <!-- <img [src]="(project?.img||'') | imagenPipe:'doctors'" alt=""> -->
         <div class="datos ">
           <h5 class="card-title fw-bold text-dark m-0 p-0">{{ project.nombre }}</h5>
         </div>
@@ -10,91 +9,33 @@
       </div>
       
       <div class="mt-3">
-        <!-- <div class="d-flex align-items-center mb-2">
-          <div class="i fa fa-instagram"></div> &nbsp;&nbsp;
-          <a [href]="project.rrss" target="_blank" rel="noopener noreferrer" class="text-primary text-decoration-none">
-            Visitar Cliente Instagram
-          </a>
-        </div> -->
         <details>
           <summary class="">Detalles </summary>
           <div class="features small mb-auto">
-            <div class="d-flex align-items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                class="bi bi-clock text-secondary me-2" viewBox="0 0 16 16">
-                <path
-                  d="M8 3.5a.5.5 0 01.5.5v3.25l2.5 1.5a.5.5 0 11-.5.866l-2.75-1.65A.5.5 0 017.5 7V4a.5.5 0 01.5-.5z" />
-                <path d="M8 16A8 8 0 108 0a8 8 0 000 16zM8 1a7 7 0 110 14A7 7 0 018 1z" />
-              </svg>
-              <!-- <span class="text-secondary" *ngIf="project.dateVisita">
-                Fecha Visita: {{ project.dateVisita }}
+            <div class="d-flex align-items-center" *ngIf="project.correo">
+              <i class="fa fa-envelope"></i>&nbsp; &nbsp;
+              <span class="text-secondary">
+                {{ project.correo }}
               </span>
-              <span class="text-secondary" *ngIf="!project.dateVisita">
-                Fecha Visita: Pendiente
-              </span> -->
             </div>
-
-            
             <div class="d-flex align-items-center" *ngIf="project.telefono">
-              <i class="fa fa-map-pin"></i>&nbsp; &nbsp;
+              <i class="fa fa-whatsapp"></i>&nbsp; &nbsp;
               <span class="text-secondary">
-                Whatsapp: {{ project.telefono }}
+                {{ project.telefono }}
               </span>
             </div>
-            
-            <!-- <div class="d-flex align-items-center">
-              <i class="fa fa-book"></i>&nbsp;&nbsp;
-              <span class="text-secondary">
-                Estado App: {{ project.status }}
-              </span>
-            </div> -->
-            <!-- <div class="d-flex align-items-center">
-              <i class="fa fa-book"></i>&nbsp;&nbsp;
-              <span class="text-secondary">
-                Estado Seguimiento: {{ project.estado_seguimiento }}
-              </span>
-            </div> -->
-            
           </div>
         </details>
-
-
-
       </div>
 
       <div class="mt-4 d-flex justify-content-between align-items-center">
-        <!-- <button (click)="togglePresentation()" [ngClass]="{
-          'btn btn-success': project.status === true,
-          'btn btn-danger': project.status !== true
-        }">
-          {{ project.status === true ? 'Aprobado' : 'Falta Aprobar' }}
-        </button>
-        &nbsp;
-        <button (click)="togglePresentation()" [ngClass]="{
-          'btn btn-success': project.notificado === true,
-          'btn btn-danger': project.notificado !== true
-        }">
-          {{ project.notificado === true ? 'Notificado' : 'Falta Propuesta' }}
-        </button> -->
-        &nbsp;
         <div class="d-flex gap-1">
           <button href="javascript:void(0)" (click)="openEditModal(project)" data-bs-toggle="modal"
             data-bs-target="#editProject" class="btn btn-outline-primary p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil"
-              viewBox="0 0 16 16">
-              <path
-                d="M12.146.854a.5.5 0 01.708 0l2.292 2.292a.5.5 0 010 .708l-9.793 9.793a.5.5 0 01-.168.11l-4 1.5a.5.5 0 01-.65-.65l1.5-4a.5.5 0 01.11-.168l9.793-9.793z" />
-            </svg>
+            <i class="fa fa-eye"></i>
           </button>
-
           <button (click)="deleteProject()" class="btn btn-outline-danger p-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash"
-              viewBox="0 0 16 16">
-              <path
-                d="M5.5 5.5a.5.5 0 01.5.5v6a.5.5 0 01-1 0v-6a.5.5 0 01.5-.5zm5 0a.5.5 0 01.5.5v6a.5.5 0 01-1 0v-6a.5.5 0 01.5-.5z" />
-              <path fill-rule="evenodd"
-                d="M14.5 3a1 1 0 01-1 1H13v9a2 2 0 01-2 2H5a2 2 0 01-2-2V4h-.5a1 1 0 01-1-1V2h13v1zM4.118 4L4 4.059V13a1 1 0 001 1h6a1 1 0 001-1V4.059L11.882 4H4.118z" />
-            </svg>
+            <i class="fa fa-trash"></i>
           </button>
         </div>
       </div>

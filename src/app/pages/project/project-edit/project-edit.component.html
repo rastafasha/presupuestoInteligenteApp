@@ -1,192 +1,177 @@
 <div class="modal fade" id="editProject" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="projectModalLabel">{{title}}: {{projectSeleccionado?.nombre}} | {{projectSeleccionado?.empresa}}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="onClose()"></button>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="projectModalLabel">{{title}}: {{projectSeleccionado?.nombre}} |
+          {{projectSeleccionado?.empresa}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <app-loading *ngIf="isLoading"></app-loading>
+        <div class="container" *ngIf="!isLoading">
+          <!-- Step Indicator -->
+          <div class="step-indicator m-t-20 m-b-20">
+            <div class="step" [ngClass]="{'active': currentStep >= 1, 'completed': currentStep > 1}">
+              <span class="step-number">1</span>
+              <span class="step-label">Datos</span>
             </div>
-            <div class="modal-body">
-                <app-loading *ngIf="isLoading"></app-loading>
-                <div class="container" *ngIf="!isLoading">
-                    <!-- Step Indicator -->
-                    <div class="step-indicator m-t-20 m-b-20">
-                        <div class="step" [ngClass]="{'active': currentStep >= 1, 'completed': currentStep > 1}">
-                            <span class="step-number">1</span>
-                            <span class="step-label">Datos</span>
-                        </div>
-                        
-                        <div class="step-line"></div>
-                        <div class="step" [ngClass]="{'active': currentStep >= 3}">
-                            <span class="step-number">2</span>
-                            <span class="step-label">Cotizaciones</span>
-                        </div>
-                    </div>
-                    <div *ngIf="currentStep === 1">
-                        <form *ngIf="projectForm" class="form-horizontal form-material" [formGroup]="projectForm">
-                            <div class="row">
-                                <div class="col-xs-12 col-md-4">
-                                    <label>Empresa <span class="required">*</span></label>
-                                    <input type="text" formControlName="empresa" class="form-control"
-                                        (blur)="verificarProject($event)" required>
-                                    <div *ngIf="projectForm.get('empresa')?.touched" class="text-danger">
-                                        <div *ngIf="projectForm.get('empresa')?.errors?.['required']">
-                                            Campo Requerido
-                                        </div>
-                                        <div *ngIf="projectForm.get('empresa')?.errors?.['minlength']">
-                                            Mínimo 3 Caracteres
-                                        </div>
-                                        <!-- Esta es la línea que debe activarse cuando el backend devuelva true -->
-                                        <!-- <small *ngIf="projectExiste" class="text-danger mt-1 d-block small">
-                                            * Este nombre ya está registrado.
-                                        </small> -->
-                                    </div>
 
-                                </div>
-                                <div class="col-xs-12 col-md-4 mb-2">
-                                    <label>nombre</label>
-                                    <input type="text" formControlName="nombre" class="form-control">
-
-                                </div>
-                                <div class="col-xs-12 col-md-4 mb-2">
-                                    <label>Num Whatsapp</label>
-                                    <input type="text" formControlName="telefono" class="form-control">
-
-                                </div>
-                                <div class="col-xs-12 col-md-4 mb-2">
-                                    <label>Email Contacto </label>
-                                    <input type="text" formControlName="correo" class="form-control">
-
-                                </div>
-                            </div>
-
-                            <div class="row">
-
-                                <div class="col-4">
-                                    <button (click)="handleSubmit()" class="btn btn-outline-success">
-                                        {{ projectSeleccionado ? 'Actualizar y Continuar' : 'Crear y Continuar' }}
-                                    </button>
-                                </div>
-                                
-                                <div class="col-4">
-                                    <button class="btn btn-success waves-effect waves-light m-r-10 btn-block"
-                                        type="button" (click)="nextStep()">Siguiente</button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-                    <!-- lista de cotizaciones -->
-                    <div *ngIf="currentStep === 2" class="animate__animated animate__fadeIn">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h5 class="text-primary mb-0">📋 Historial de Requerimientos y Presupuestos</h5>
-    <span class="badge bg-secondary">Total: {{ cotizaciones.length }}</span>
-  </div>
-
-  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-    <table class="table table-hover align-middle border">
-      <thead class="table-light sticky-top">
-        <tr>
-          <th>Producto Solicitado</th>
-          <th>Canal de Entrada</th>
-          <th>Proveedor Alternativo</th>
-          <th style="width: 110px;">Costo Base</th>
-          <th style="width: 100px;">% Ganancia</th>
-          <th style="width: 130px;">Precio Venta</th>
-          <th class="text-center">Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let cot of cotizaciones" [ngClass]="{'table-success-light': cot.estado === 'enviado'}">
-          
-          <!-- 1. Nombre del Producto -->
-          <td>
-            <span class="fw-semibold d-block text-truncate" style="max-width: 220px;" [title]="cot.productoSolicitado">
-              {{ cot.productoSolicitado }}
-            </span>
-            <small class="text-muted">{{ cot.fechaSolicitud | date:'dd/MM/yyyy, h:mm a' }}</small>
-          </td>
-
-          <!-- 2. Canal de Entrada con Badge -->
-          <td>
-            <span class="badge rounded-pill" [ngClass]="cot.canalEntrada === 'whatsapp' ? 'bg-success' : 'bg-info text-dark'">
-              {{ cot.canalEntrada === 'whatsapp' ? '💬 WhatsApp' : '📧 Correo' }}
-            </span>
-          </td>
-
-          <!-- 3. Selector de Proveedores del Top 3 -->
-          <td>
-            <select 
-              class="form-select form-select-sm" 
-              [(ngModel)]="cot.proveedorSeleccionadoObj" 
-              (change)="actualizarPrecioVenta(cot)"
-              [disabled]="cot.estado === 'enviado'">
-              <option *ngFor="let prov of cot.proveedoresEncontrados" [ngValue]="prov">
-                {{ prov.nombreProveedor }}
-              </option>
-            </select>
-          </td>
-
-          <!-- 4. Costo Base del Proveedor -->
-          <td class="text-secondary fw-medium">
-            {{ (cot.proveedorSeleccionadoObj?.precioCosto || 0) | currency }}
-          </td>
-
-          <!-- 5. Input de Margen Numérico -->
-          <td>
-            <div class="input-group input-group-sm">
-              <input 
-                type="number" 
-                class="form-control text-center" 
-                [(ngModel)]="cot.porcentajeGanancia" 
-                (input)="actualizarPrecioVenta(cot)"
-                min="0"
-                placeholder="0"
-                [disabled]="cot.estado === 'enviado'">
-              <span class="input-group-text">%</span>
+            <div class="step-line"></div>
+            <div class="step" [ngClass]="{'active': currentStep >= 3}">
+              <span class="step-number">2</span>
+              <span class="step-label">Cotizaciones</span>
             </div>
-          </td>
-
-          <!-- 6. Precio Venta Final Calculado -->
-          <td class="fw-bold text-dark">
-            {{ (cot.precioFinalVenta || 0) | currency }}
-          </td>
-
-          <!-- 7. Botón de Despacho Condicional -->
-          <td class="text-center">
-            <button 
-              *ngIf="cot.estado !== 'enviado'"
-              class="btn btn-sm btn-primary px-3 shadow-sm"
-              [disabled]="!cot.porcentajeGanancia || cot.porcentajeGanancia <= 0"
-              (click)="enviarCotizacionFinal(cot)">
-              🚀 Despachar
-            </button>
-            <span *ngIf="cot.estado === 'enviado'" class="text-success fw-bold d-flex align-items-center justify-content-center gap-1">
-              <i class="bi bi-check-circle-fill"></i> Enviado
-            </span>
-          </td>
-
-        </tr>
-
-        <!-- Estado Vacío -->
-        <tr *ngIf="cotizaciones.length === 0">
-          <td colspan="7" class="text-center text-muted py-4">
-            <p class="mb-1">⏱️ No hay solicitudes de presupuestos registradas para este cliente.</p>
-            <small>Los mensajes entrantes de WhatsApp o correo que contengan palabras clave aparecerán aquí.</small>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
+          </div>
+          <div *ngIf="stepActual === 1" class="animate__animated animate__fadeIn">
+            <div class="card border-0 bg-light p-4 mb-4">
+              <div class="d-flex align-items-center mb-3">
+                <div class="avatar-icon bg-purple text-white rounded-circle p-3 me-3 shadow-sm">
+                  <i class="fa fa-user "></i>
                 </div>
+                <div>
+                  <h4 class="mb-0 text-dark fw-bold">{{ projectSeleccionado?.nombre }}</h4>
+                  <p class="text-muted mb-0">
+                    <i class="fa fa-building me-1"></i> {{ projectSeleccionado?.empresa || 'Particular' }}
+                  </p>
+                </div>
+              </div>
+
+              <hr class="text-muted opacity-25">
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="text-xs text-uppercase fw-bold text-muted d-block">Número de WhatsApp</label>
+                  <span class="text-dark fw-medium">
+                    <i class="fa fa-whatsapp text-success me-1"></i>
+                    {{ projectSeleccionado?.telefono ? '+' + projectSeleccionado.telefono : 'No registrado' }}
+                  </span>
+                </div>
+                <div class="col-md-6">
+                  <label class="text-xs text-uppercase fw-bold text-muted d-block">Email de Contacto</label>
+                  <span class="text-dark fw-medium">
+                    <i class="fa fa-envelope text-primary me-1"></i>
+                    {{ projectSeleccionado?.correo || 'No registrado' }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="modal-footer ">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    (click)="onClose()">Cerrar</button>
+
+            <div class="d-flex justify-content-end">
+             <button type="button" class="btn btn-purple px-4 py-2" (click)="irAlPasoDos()">
+              Ver Requerimientos Detallados <i class="fa fa-arrow-right ms-2"></i>
+            </button>
             </div>
+          </div>
+          <!-- lista de cotizaciones -->
+          <div *ngIf="stepActual === 2" class="animate__animated animate__fadeIn">
+
+            <!-- Subtabla Nueva: Artículos desglosados quirúrgicamente por Gemini -->
+            <div class="mb-4">
+              <h5 class="text-dark fw-bold mb-3 d-flex align-items-center">
+                <i class="fa fa-boxes text-purple me-2"></i> Artículos Solicitados en Tiempo Real
+              </h5>
+
+              <div class="table-responsive rounded-3 border">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="bg-light text-muted text-uppercase text-xs font-monospace">
+                    <tr>
+                      <th style="width: 15%">Cant.</th>
+                      <th>Descripción del Producto / Especificación</th>
+                      <th style="width: 20%">Estado IA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Iteramos sobre la nueva propiedad articulosDetallados extraída por el Backend -->
+                    <tr *ngFor="let articulo of cotizacionSeleccionada?.articulosDetallados">
+                      <td>
+                        <span class="badge bg-purple-light text-purple fw-bold px-3 py-2">
+                          {{ articulo.cantidad }}x
+                        </span>
+                      </td>
+                      <td>
+                        <span class="text-dark fw-semibold">{{ articulo.productoDetalle }}</span>
+                      </td>
+                      <td>
+                        <span class="badge bg-success-light text-success px-2 py-1 text-xs">
+                          <i class="fa fa-check-circle me-1"></i> Mapeado
+                        </span>
+                      </td>
+                    </tr>
+                    <tr *ngIf="!cotizacionSeleccionada?.articulosDetallados?.length">
+                      <td colspan="3" class="text-center py-3 text-muted text-xs">
+                        No se encontraron artículos desglosados en esta solicitud.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Historial de Presupuestos y Comparador de Proveedores del Scraper -->
+            <div class="mb-4">
+              <h5 class="text-dark fw-bold mb-3 d-flex align-items-center">
+                <i class="fa fa-search-dollar text-purple me-2"></i> Análisis del Scraper y Márgenes de Venta
+              </h5>
+
+              <div class="table-responsive rounded-3 border">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="bg-light text-muted text-uppercase text-xs font-monospace">
+                    <tr>
+                      <th>Proveedor Encontrado</th>
+                      <th>Costo Base</th>
+                      <th style="width: 20%">% Ganancia</th>
+                      <th>Precio Venta Final</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Iteración sobre los proveedores que Gemini Search inyectó en vivo -->
+                    <tr *ngFor="let prov of cotizacionSeleccionada?.proveedoresEncontrados">
+                      <td>
+                        <a [href]="prov.urlOrigen" target="_blank" class="text-purple fw-bold text-decoration-none">
+                          <i class="fa fa-external-link-alt me-1 text-xs"></i> {{ prov.nombreProveedor }}
+                        </a>
+                      </td>
+                      <td class="fw-bold text-dark">
+                        {{ prov.precioCosto | currency:'USD':'symbol':'1.2-2' }}
+                      </td>
+                      <td>
+                        <div class="input-group input-group-sm" style="width: 100px;">
+                          <!-- Vinculado dinámicamente para calcular márgenes en vivo -->
+                          <input type="number" class="form-control text-center fw-bold"
+                            [(ngModel)]="prov.porcentajeGanancia" (input)="calcularPrecioVenta(prov)">
+                          <span class="input-group-text bg-light text-muted">%</span>
+                        </div>
+                      </td>
+                      <td class="fw-bold text-purple fs-5">
+                        {{ (prov.precioVentaFinal || 0) | currency:'USD':'symbol':'1.2-2' }}
+                      </td>
+                      <td>
+                        <!-- Despachar propuesta mediante la función manual que lee tu whatsapp o correo corporativo -->
+                        <button class="btn btn-sm btn-success px-3 rounded-pill fw-bold"
+                          [disabled]="cotizacionSeleccionada.estado === 'enviado'" (click)="despacharPropuesta(prov)">
+                          <i class="fa fa-paper-plane me-1"></i> Despachar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Botones de Navegación del Modal -->
+          <div class="d-flex justify-content-between mt-4">
+            <button type="button" class="btn btn-outline-secondary px-4" (click)="stepActual = 1">
+              <i class="fa fa-arrow-left me-2"></i> Volver a Ficha
+            </button>
+            <button type="button" class="btn btn-light px-4" (click)="cerrarModal()">
+              Cerrar
+            </button>
+          </div>
+
+
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>

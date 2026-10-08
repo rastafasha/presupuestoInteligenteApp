@@ -77,7 +77,7 @@ export class HeaderComponent implements OnInit {
 
   /**
    * 🔥 DETONADOR DEL SWITCH COMERCIAL NATIVO
-   * Se ejecuta cada vez que Diego mueva el interruptor en el menú superior
+   * Se ejecuta cada vez que se mueva el interruptor en el menú superior
    */
   togglePushNotifications(event: any): void {
     const quiereActivar = event.target.checked;
@@ -99,7 +99,7 @@ export class HeaderComponent implements OnInit {
       });
     } else {
       this.pushActivas = false;
-      console.log('🔕 [WEBPUSH]: Diego pausó las alertas visuales desde el Header.');
+      console.log('🔕 [WEBPUSH]:  pausó las alertas visuales desde el Header.');
     }
     }
 
@@ -123,7 +123,7 @@ export class HeaderComponent implements OnInit {
       if (this.contadorPendientes > 0) this.contadorPendientes--;
 
       // 🚀 REDIRECCIÓN INTELIGENTE: Si la alerta viene enlazada a una cotización,
-      // puedes redirigir a Diego directo a esa zona de trabajo.
+      // puedes redirigir a usuario directo a esa zona de trabajo.
       if (alerta.referenciaCotizacionId) {
         this.router.navigate(['/dashboard/clients'], { queryParams: { cotId: alerta.referenciaCotizacionId } });
       }

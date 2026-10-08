@@ -6,25 +6,13 @@ import {
   OnChanges,
   Output,
   EventEmitter,
-  ChangeDetectorRef,
+  OnDestroy,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormControl,
-} from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Cliente } from 'src/app/models/cliente';
 import { Cotizacion } from 'src/app/models/cotizacion';
-import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
-import { ClienteService } from 'src/app/services/cliente.service';
 import { CotizacionService } from 'src/app/services/cotizacion.service';
 import { SocketService } from 'src/app/services/socket.service';
-import { UserService } from 'src/app/services/user.service';
 import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
@@ -35,350 +23,207 @@ declare var bootstrap: any;
   styleUrls: ['./project-edit.component.css'],
   standalone: false
 })
-export class ProjectEditComponent implements OnInit, OnChanges {
-  @Input() projectSeleccionado;
+export class ProjectEditComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() projectSeleccionado: any;
   @Output() refreshProjectList: EventEmitter<void> = new EventEmitter<void>();
   @Output() closeModal: EventEmitter<void> = new EventEmitter<void>();
 
-  projectForm: FormGroup;
-  title: string;
+  title: string = 'Ficha del Cliente';
   usuario: any;
-  partners: User[];
-  project: Cliente;
-  id: string;
-  public imagenSubir!: File;
-  public imgTemp: any = null;
-  public FILE_AVATAR: any;
-  public IMAGE_PREVISUALIZA: any = 'assets/img/user-06.jpg';
-
   isLoading: boolean = false;
-  currentStep = 1;
-  cargandoImagen = false;
-  projectExiste = false;
-  public whatsappBackupLink: string = '';
-  cotizaciones : Cotizacion[] = [];
+  
+  // 🔥 CORREGIDO: Sincronizado con 'stepActual' del HTML para que la interfaz renderice de inmediato
+  stepActual: number = 1; 
+  
+  // Guardará la cotización activa que contiene el array de productos y proveedores
+  cotizacionSeleccionada: any = null;
+  cotizaciones: any[] = [];
   private socketSub!: Subscription;
 
   constructor(
-    private fb: FormBuilder,
-    private usuarioService: UserService,
     private authService: AuthService,
-    private clienteService: ClienteService,
     private cotizacionService: CotizacionService,
     private socketService: SocketService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(): void {
     this.usuario = this.authService.getLocalStorage();
-    this.validarFormulario();
 
-    // 🔥 ENGRANAJE EN VIVO: Escuchamos si Gemini y el Scraper terminan un análisis
+    // 🔌 ENGRANAJE EN VIVO: Escuchamos el WebSocket para inyectar cotizaciones de Apple en tiempo real
     this.socketSub = this.socketService.escucharEvento('nueva-solicitud-entrante')
       .subscribe((nuevaCot: any) => {
-        // Obtenemos el ID del cliente que estamos editando en pantalla
-        const clienteIdActual = this.projectSeleccionado?._id || this.projectForm.get('id')?.value;
+        const clienteIdActual = this.projectSeleccionado?._id;
 
-        // 🛡️ Filtro de Seguridad: Solo inyectamos la fila si la cotización pertenece al cliente del modal abierto
-        if (nuevaCot.cliente.id === clienteIdActual) {
-          console.log('🚀 [SOCKET]: Se detectó un nuevo requerimiento en vivo para este cliente:', nuevaCot);
+        // 🛡️ Filtro de Seguridad: Solo inyectamos si pertenece al cliente abierto en el modal
+        if (clienteIdActual && nuevaCot.cliente?.id === clienteIdActual) {
+          console.log('🚀 [SOCKET]: Nueva cotización detectada en vivo para este cliente:', nuevaCot);
           
-          // Preparamos sus objetos reactivos igual que en el método HTTP
-          nuevaCot.proveedorSeleccionadoObj = nuevaCot.proveedoresEncontrados[0] || null;
-          nuevaCot.precioFinalVenta = nuevaCot.proveedorSeleccionadoObj ? nuevaCot.proveedorSeleccionadoObj.precioCosto : 0;
+          // Mapeamos los proveedores de la cotización que entra en vivo
+          if (nuevaCot.proveedoresEncontrados && nuevaCot.proveedoresEncontrados.length > 0) {
+            nuevaCot.proveedoresEncontrados.forEach((prov: any) => {
+              prov.porcentajeGanancia = prov.porcentajeGanancia || 0;
+              prov.precioVentaFinal = prov.precioCosto;
+            });
+          }
           
-          // Lo agregamos al inicio del arreglo visual de la tabla
+          // Agregamos la cotización al pool general y la seleccionamos para actualizar el Paso 2
           this.cotizaciones.unshift(nuevaCot);
+          this.cotizacionSeleccionada = nuevaCot;
         }
       });
   }
 
- ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['projectSeleccionado'] &&
-      changes['projectSeleccionado'].currentValue
-    ) {
-      this.title = 'Editando Cliente';
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['projectSeleccionado'] && changes['projectSeleccionado'].currentValue) {
       const project = changes['projectSeleccionado'].currentValue;
-      this.setPartnersFormArray(project.partners);
-      
-      this.projectForm.patchValue({
-        id: project._id,
-        nombre: project.nombre,
-        empresa: project.empresa,
-        correo: project.correo,
-        telefono: project.telefono,
-        fechaRegistro: project.fechaRegistro,
-      });
-
       this.projectSeleccionado = project;
+      
+      console.log('👤 Cliente seleccionado cargado en el modal:', this.projectSeleccionado);
 
-      // =========================================================================
-      // 🔥 REACCIÓN INTELIGENTE DE APERTURA:
-      // =========================================================================
+      // 🔄 REACCIÓN INTELIGENTE DE APERTURA DESDE LA CAMPANA O TABLA
       if (project.abrirEnPasoDos) {
-        this.currentStep = 2; // 🟢 Saltamos directo al paso de cotizaciones
-        this.getCotizaciones(); // 📦 Cargamos la tabla interactiva de insumos médicos
-        
-        // Limpiamos la bandera para que si cierra y vuelve a abrir de forma normal, inicie en el paso 1
+        this.stepActual = 2; 
+        this.getCotizaciones(); 
         delete project.abrirEnPasoDos; 
       } else {
-        // Flujo normal estándar cuando haces clic desde la tabla del CRM
-        this.currentStep = 1; 
+        this.stepActual = 1; 
       }
-
-    } else {
-      this.title = 'Editando Cliente';
     }
   }
 
-  
-
-  getPartners() {
-    this.usuarioService.getAllEditors().subscribe((resp: any) => {
-      this.partners = resp;
-      this.setPartnersFormArray([]);
-    });
-  }
-
-  setPartnersFormArray(selectedPartners: string[]) {
-    const partnersFormArray = this.fb.array([]);
-    if (this.partners && this.partners.length > 0) {
-      this.partners.forEach((partner) => {
-        const isSelected = selectedPartners.includes(partner.uid);
-        partnersFormArray.push(new FormControl(isSelected));
-      });
-    }
-    // this.projectForm.setControl('partners', partnersFormArray);
-  }
-
-  validarFormulario() {
-    this.projectForm = this.fb.group({
-      nombre: [''],
-      empresa: [''],
-      telefono: [''],
-      fechaRegistro: [''],
-      correo: [''],
-      id: [''],
-    });
-  }
-
-
-  onClose() {
-    this.projectSeleccionado = null;
-    this.currentStep = 1;
-    this.cotizaciones = []; 
-    this.projectForm.reset();
-    this.title = 'Creando Cliente';
-    // Also reset default values if needed
-    this.projectForm.patchValue({
-      
-      nombre: null,
-      empresa: null,
-      fechaRegistro: null,
-      correo: null,
-      telefono: null,
-    });
-    // Emit event to parent to reset the projectSeleccionado variable
-
-    // Close modal programmatically
-    const modalElement = document.getElementById('editProject');
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    if (modal) {
-      modal.hide();
-
-    }
-    // Emit event to refresh project list
-    this.refreshProjectList.emit();
-    this.closeModal.emit();
-    this.ngOnInit();
-    
-    //  this.router.navigate([], { queryParams: { cotId: null }, queryParamsHandling: 'merge' });
-  }
-
-  nextStep() {
-    const nombre = this.projectForm.get('nombre');
-    const telefono = this.projectForm.get('telefono');
-    const empresa = this.projectForm.get('empresa');
-    const fechaRegistro = this.projectForm.get('fechaRegistro');
-    const correo = this.projectForm.get('correo');
-
-    if (nombre?.invalid || 
-      telefono?.invalid || empresa?.invalid || 
-      fechaRegistro?.invalid ||
-      correo?.invalid
-
-    ) {
-      nombre?.markAsTouched();
-      telefono?.markAsTouched();
-      empresa?.markAsTouched();
-      fechaRegistro?.markAsTouched();
-      correo?.markAsTouched();
-      this.projectForm.markAllAsTouched(); // Esto activa las validaciones visuales
-      return;
-    }
-    this.currentStep = 2;
-    this.getCotizaciones(); 
-
-  }
-
-  
-
-  getCotizaciones() {
-    const clienteId = this.projectSeleccionado?._id || this.projectForm.get('id')?.value;
-
+  /**
+   * Carga las cotizaciones del cliente y selecciona la más reciente para el despiece de la IA
+   */
+  getCotizaciones(): void {
+    const clienteId = this.projectSeleccionado?._id;
     if (!clienteId) return;
 
-    // 🟢 Cambiamos (resp: any[]) por (resp: any) para poder acceder a la propiedad interna del JSON
-    this.cotizacionService.obtenerCotizacionesPorCliente(clienteId).subscribe((resp: any) => {
-      
-      // Accedemos de forma segura a resp.cotizaciones o usamos el respaldo de resp en caso de que viniera directo
-      const listadoCrudo = resp.cotizaciones || resp || [];
+    this.isLoading = true;
+    this.cotizacionService.obtenerCotizacionesPorCliente(clienteId).subscribe({
+      next: (resp: any) => {
+        const listadoCrudo = resp.cotizaciones || resp || [];
 
-      this.cotizaciones = listadoCrudo.map((cot: any) => {
-        // Asignamos el proveedor por defecto
-        cot.proveedorSeleccionadoObj = cot.proveedoresEncontrados.find(
-          (p: any) => p._id === cot.proveedorSeleccionadoId
-        ) || cot.proveedoresEncontrados[0] || null;
+        this.cotizaciones = listadoCrudo.map((cot: any) => {
+          // Si el backend ya guardó proveedores, inicializamos sus propiedades de cálculo reactivo
+          if (cot.proveedoresEncontrados && cot.proveedoresEncontrados.length > 0) {
+            cot.proveedoresEncontrados.forEach((prov: any) => {
+              prov.porcentajeGanancia = cot.porcentajeGanancia || 0;
+              // Si ya tiene precio final calculado de la base de datos lo usa, si no, inicia con el costo base
+              prov.precioVentaFinal = cot.precioFinalVenta || prov.precioCosto;
+            });
+          }
+          return cot;
+        });
 
-        // Si la cotización ya viene con precioFinalVenta del seeder, lo mantenemos; 
-        // si no, calculamos el costo base con ganancia 0 por defecto
-        if (!cot.precioFinalVenta && cot.proveedorSeleccionadoObj) {
-          cot.precioFinalVenta = cot.proveedorSeleccionadoObj.precioCosto;
+        // 🔥 Establecemos la cotización más reciente en foco para pintar el Paso 2 del HTML
+        if (this.cotizaciones.length > 0) {
+          this.cotizacionSeleccionada = this.cotizaciones[0];
         }
 
-        return cot;
-      });
-      
-      console.log('📊 Cotizaciones procesadas y listas para la tabla:', this.cotizaciones);
+        this.isLoading = false;
+        console.log('📊 Cotización activa en foco para el modal:', this.cotizacionSeleccionada);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('❌ Error recuperando requerimientos:', err);
+      }
     });
   }
 
   /**
-   * Recalcula dinámicamente el precio de venta final en la UI
+   * Recalcula dinámicamente el precio de venta final en la UI al cambiar el input del %
    */
-  actualizarPrecioVenta(cotizacion: any): void {
-    if (!cotizacion.proveedorSeleccionadoObj) return;
+  calcularPrecioVenta(proveedor: any): void {
+    if (!proveedor || !proveedor.precioCosto) return;
 
-    const costoBase = cotizacion.proveedorSeleccionadoObj.precioCosto;
-    const margen = cotizacion.porcentajeGanancia || 0;
+    const costoBase = parseFloat(proveedor.precioCosto);
+    const margen = parseFloat(proveedor.porcentajeGanancia) || 0;
 
-    // Usamos la fórmula matemática de tu servicio
-    cotizacion.precioFinalVenta = this.cotizacionService.calcularPrecioVenta(costoBase, margen);
+    // Fórmula matemática directa: Costo * (1 + Margen/100)
+    proveedor.precioVentaFinal = costoBase * (1 + (margen / 100));
   }
 
   /**
-   * Ejecuta el despacho manual llamando al endpoint de Node
+   * Despacha la propuesta final (vía WhatsApp o Correo) conectando con el backend
    */
-  enviarCotizacionFinal(cotizacion: any): void {
-    if (!cotizacion.proveedorSeleccionadoObj) return;
+  despacharPropuesta(proveedor: any): void {
+    if (!this.cotizacionSeleccionada || !proveedor) return;
 
     const payload = {
-      cotizacionId: cotizacion._id,
-      porcentajeGanancia: cotizacion.porcentajeGanancia,
-      precioCostoSeleccionado: cotizacion.proveedorSeleccionadoObj.precioCosto,
-      nombreProveedorSeleccionado: cotizacion.proveedorSeleccionadoObj.nombreProveedor,
-      canalEnvio: cotizacion.canalEntrada // 'whatsapp' o 'correo'
+      cotizacionId: this.cotizacionSeleccionada._id,
+      porcentajeGanancia: proveedor.porcentajeGanancia || 0,
+      precioCostoSeleccionado: proveedor.precioCosto,
+      nombreProveedorSeleccionado: proveedor.nombreProveedor,
+      canalEnvio: this.cotizacionSeleccionada.canalEntrada // El sistema sabe si vino de 'whatsapp' o 'correo' [1]
     };
 
-    this.cotizacionService.enviarPropuestaComercial(payload).subscribe({
-      next: (res: any) => {
-        Swal.fire('¡Propuesta Enviada!', res.msg, 'success');
-        cotizacion.estado = 'enviado'; // Congela la fila
-      },
-      error: (err) => Swal.fire('Error', 'No se pudo despachar la cotización.', 'error')
+    Swal.fire({
+      title: '¿Despachar Presupuesto?',
+      text: `Se enviará la propuesta comercial de forma automatizada por el canal de ${payload.canalEnvio.toUpperCase()}.`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#6f42c1',
+      confirmButtonText: 'Sí, enviar ahora'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cotizacionService.enviarPropuestaComercial(payload).subscribe({
+          next: (res: any) => {
+            Swal.fire('¡Propuesta Enviada!', res.msg, 'success');
+            this.cotizacionSeleccionada.estado = 'enviado'; // Congela la fila en el HTML [1]
+            this.refreshProjectList.emit(); // Refresca el CRM de fondo [1]
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire('Error', 'No se pudo procesar el despacho automatizado.', 'error');
+          }
+        });
+      }
     });
   }
 
-
-  
-
-  prevStep() {
-    this.currentStep = 1;
-    this.cotizaciones = []; 
-  }
-  
-
-
-
-  handleSubmit() {
-    if (!this.projectForm.valid) {
-      //mostramos las alertas de los campos requeridos
-      this.projectForm.markAllAsTouched(); // Esto activa las validaciones visuales
-      return
-    }
-
-    this.isLoading = true;
-    const { nombre } = this.projectForm.value;
-    // Extract selected partner IDs from the FormArray
-    const selectedPartners = this.projectForm.value.partners
-      .map((checked, i) => (checked ? this.partners[i].uid : null))
-      .filter((v) => v !== null);
-
-    const dataToSend = {
-      ...this.projectForm.value,
-      // formData,
-      partners: selectedPartners,
-    };
-
-    if (this.projectSeleccionado) {
-      //actualizar
-      const data = {
-        ...dataToSend,
-      };
-      this.clienteService.actualizarCliente(this.projectSeleccionado._id, data).subscribe((resp) => {
-        this.isLoading = false;
-        Swal.fire(
-            'Actualizado',
-            `"${this.projectSeleccionado.name}" actualizado correctamente por el sistema.`,
-            'success'
-          ).then(() => {
-            this.ejecutarCierreYRefresco();
-          });
-
-        
-        const modalElement = document.getElementById('editProject');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        if (modal) {
-          modal.hide();
-        }
-
-        this.refreshProjectList.emit();
-        this.ngOnInit();
-      });
-    } else {
-      //crear
-      this.clienteService.crearCliente(dataToSend).subscribe((resp: any) => {
-        this.isLoading = false;
-        
-        this.projectSeleccionado = resp;
-        Swal.fire('¡Paso 1 completado!', 'Tienda creada. Ahora Agrega la info para el menu y sube la imagen.', 'success');
-        this.currentStep = 2;
-      });
-    }
+  /**
+   * Avanzar al Paso 2 de forma limpia y directa
+   */
+  irAlPasoDos(): void {
+    this.stepActual = 2;
+    this.getCotizaciones();
   }
 
-  private ejecutarCierreYRefresco() {
-    // Ocultamos el modal de Bootstrap programáticamente sin colisiones visuales
+  cerrarModal(): void {
+    // 1. Ocultamos el modal programáticamente a través de Bootstrap de forma segura
     const modalElement = document.getElementById('editProject');
     if (modalElement) {
       const modal = bootstrap.Modal.getInstance(modalElement);
-      if (modal) modal.hide();
+      if (modal) {
+        modal.hide();
+      }
     }
 
-    // Refrescamos la lista de la tabla de fondo y reiniciamos el formulario
+    // 2. 🔥 ANCLA DE SEGURIDAD: Eliminamos manualmente cualquier fondo gris huérfano en el DOM
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    
+    // 3. Devolvemos el scroll al cuerpo de la página por si Bootstrap lo dejó congelado
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+
+    // 4. Limpiamos las variables del estado después de asegurar la limpieza visual
+    this.projectSeleccionado = null;
+    this.cotizacionSeleccionada = null;
+    this.stepActual = 1;
+    this.cotizaciones = []; 
+
+    // 5. Emitimos los eventos de refresco al componente padre
     this.refreshProjectList.emit();
-    this.ngOnInit();
-    this.whatsappBackupLink = ''; // Limpiamos el link de la memoria
+    this.closeModal.emit();
   }
 
   ngOnDestroy(): void {
-    // 🧹 Cerramos el canal del socket al cerrar el modal o salir de la pantalla para evitar fugas de memoria
+    // 🧹 Apagamos el WebSocket al destruir el modal para evitar fugas de memoria [1]
     if (this.socketSub) {
       this.socketSub.unsubscribe();
-      console.log('🧹 [SOCKET]: Canal de escucha cerrado limpiamente.');
+      console.log('🧹 [SOCKET]: Canal de escucha del modal cerrado limpiamente [1].');
     }
   }
-
 }
