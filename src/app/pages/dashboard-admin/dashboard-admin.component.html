@@ -22,22 +22,14 @@
             </div>
         </div>
         <div class="clear"></div>
-        <div class="row mt-3">
+        <div class="row mt-3 mb-3">
             <div class="d-flex justify-content-end gap-3">
-                <div class="btn btn-primary" (click)="openEditModal()" href="javascript:void(0)" data-bs-toggle="modal"
-                    data-bs-target="#editProject">
-                    <i class="fa fa-plus"></i> <i class="fa fa-folder-o"></i>
+                <div class="btn btn-primary" routerLink="/dashboard/clients">
+                    <i class="fa fa-folder"></i>
                 </div>
-                <!-- <div class="btn btn-primary" href="javascript:void(0)" data-bs-toggle="modal"
-                    data-bs-target="#editProjectType">
-                    <i class="fa fa-plus"></i> <i class="fa fa-bookmark-o"></i>
-                </div> -->
-                <a href="javascript:;" (click)="PageSize()"
-                                            class="btn btn-primary doctor-refresh ms-2 "><i
-                                                class="fa fa-refresh"></i></a>
             </div>
         </div>
-        <div class="row mt-3">
+        <!-- <div class="row mt-3">
             <div class="col-xs-12 col-sm-8">
                 <h3>Proyectos Aprobados</h3>
                 <app-line-chart [projects]="clientes"></app-line-chart>
@@ -46,9 +38,9 @@
                 <h3>Propuestas Enviadas</h3>
                 <app-pie-chart2 [projects]="clientes"></app-pie-chart2>
             </div>
-        </div>
+        </div> -->
         <!-- acceso iconos -->
-        <app-menuiconos></app-menuiconos>
+        <!-- <app-menuiconos></app-menuiconos> -->
         <!-- acceso iconos -->
         <app-project-list [displaycomponent]="displaycomponent" [limit]="limit"></app-project-list>
 

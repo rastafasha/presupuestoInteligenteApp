@@ -11,26 +11,17 @@
             <!-- projects -->
             <div class="container">
                 <div class="row">
-                    <div class="col-xs-11 col-sm-11">
+                    <div class="col-xs-12">
                         <!-- buscador -->
                         <form class="form-horizontal ">
                             <div
                                 class="p-1 bg-light rounded rounded-pill shadow-sm mb-4 d-flex justify-content-center gap-3">
                                 <div class="input-group busc">
                                     <input type="search" name="search" type="text" class="form-control inputb "
-                                        placeholder="Buscar Project" aria-describedby="button-addon1"
+                                        placeholder="Buscar Cliente por nombre, teléfono ó correo" aria-describedby="button-addon1"
                                         [(ngModel)]="query" class="form-control border-0 bg-light" />
 
-                                    <select class="form-control selecttyp" [(ngModel)]="selectedEstado"
-                                        name="estado_seguimiento" (change)="search()">
-                                        <option value="">Seleccione Estado</option>
-                                        <option value="PENDIENTE">Pendiente</option>
-                                        <option value="INTERESADO_ESPERA_DATOS">Intesado Espera Datos</option>
-                                        <option value="CORREO_ENVIADO">Correo Enviado</option>
-                                        <option value="RECHAZADO">Rechazado</option>
-                                        <option value="APROBADO">Aprobado</option>
-                                    </select>
-
+                                   
                                     <div class="input-group-append ">
                                         <button id="button-addon1" type="submit" class="btn btn-link text-primary"
                                             (click)="search()" name="submit" data-toggle="tooltip"
@@ -46,15 +37,6 @@
                             </div>
                         </form>
                         <!-- buscador -->
-                    </div>
-                    <div class="col-xs-1 col-sm-1" [style.display]="displaycomponent">
-                        <div class="text-right">
-                            <button class="btn btn-primary" (click)="openEditModal()" href="javascript:void(0)"
-                                data-bs-toggle="modal" data-bs-target="#editProject">
-                                <i class="fa fa-pencil"></i>
-                                Crear
-                            </button>
-                        </div>
                     </div>
                 </div>
 
