@@ -80,7 +80,7 @@
                                                 <a [routerLink]="['/dashboard/user/edit', user.uid]" class="cursor" data-toggle="tooltip" data-original-title="Edit">
                                                     <div class="btn btn-success"><i class="fa fa-edit"></i></div>
                                                 </a>
-                                                <a (click)="eliminarUser(user.uid)" class="cursor" data-toggle="tooltip" data-original-title="Borrar">
+                                                <a *ngIf="user.role !== 'ADMIN' && user.role !== 'SUPERADMIN'"  (click)="eliminarUser(user.uid)" class="cursor" data-toggle="tooltip" data-original-title="Borrar">
                                                     <div class="btn btn-danger"><i class="fa fa-trash"></i></div>
                                                 </a>
                                             </td>

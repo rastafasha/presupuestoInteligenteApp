@@ -11,18 +11,22 @@
                 <!-- Logo icon --><b>
                     <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                     <!-- Dark Logo icon -->
-                    <img src="assets/svg/logoklintic.svg" style="height:50px" alt="homepage" class="dark-logo" />
+                    <img src="assets/svg/logo.svg" style="height:50px" alt="homepage" class="dark-logo" />
                     <!-- Light Logo icon -->
-                    <img src="assets/svg/logoklintic.svg" style="height:50px" alt="homepage" class="light-logo" />
+                    <img src="assets/svg/logopi_piblanco.svg" style="height:50px" alt="homepage" class="light-logo" />
                 </b>
                 <!--End Logo icon -->
-                <!-- Logo text --><span>
+                <!-- Logo text -->
+                 <span>
                     <!-- dark Logo text -->
-                    <img src="assets/svg/logo_letrasAdminColor.svg" style="height:20px" alt="homepage"
+                     <h1>ADMIN CRM</h1>
+                    <!-- <img src="assets/svg/logo_letrasAdminColor.svg" style="height:20px" alt="homepage"
                         class="dark-logo logot-text" />
-                    <!-- Light Logo text -->
+                   
                     <img src="assets/svg/logo_letrasAdminblanco.svg" style="height:20px" class="light-logo logot-text"
-                        alt="homepage" /></span> </a>
+                        alt="homepage" />-->
+                    </span> 
+                </a> 
         </div>
         <!-- ============================================================== -->
         <!-- End Logo -->
@@ -132,23 +136,16 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle waves-effect waves-dark" href="javascript:void(0)"
-                        (click)="openModal()" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-
-                        <div *ngIf="!profile">
-                            <img src="./assets/images/no-image.jpg" style="width:50px; height:50px"
-                                class="rounded-circle">
-                        </div>
-                        <div *ngIf="profile">
-                            <img [src]="profile.img | imagenPipe: 'profiles'" style="width:50px; height:50px"
-                                [alt]="user.username | slice:0:10" class="rounded-circle">
-                        </div>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right animated fadeInDown">
+                    
+                        <div class="usercircle shadow-sm">
+                                <h4>{{user.email | slice:0:1}} </h4>
+                            </div>
+                            <!-- <img [src]="profile.img | imagenPipe: 'profiles'" style="width:50px; height:50px"
+                                [alt]="user.username | slice:0:10" class="rounded-circle"> -->
+                    <!-- <div class="dropdown-menu dropdown-menu-right animated fadeInDown">
                         <ul class="dropdown-user">
                             <li>
                                 <div class="dw-user-box">
-                                    <!-- <div class="u-img"><img src="{{user.image}}" alt="{{user.username}}"></div> -->
                                     <div class="u-text">
                                         <h4>{{user.username | slice:0:10}} </h4>
                                         <span *ngIf="user.role === 'SUPERADMIN'">Super Admin</span>
@@ -164,7 +161,7 @@
                             <li><a (click)="logout()" style="cursor:pointer"><i class="fa fa-power-off"></i> Logout</a>
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
                 </li>
             </ul>
         </div>

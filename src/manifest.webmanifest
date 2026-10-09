@@ -5,7 +5,7 @@
   "scope": "./",
   "start_url": "./",
   "orientation": "portrait",
-  "description": "App Web para organizar Clientes Klyntic",
+  "description": "CRM App para cotizaciones y presupuestos",
   "icons": [
     {
       "src": "/favicon.ico",

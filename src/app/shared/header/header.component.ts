@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-header',
   standalone: false,
   templateUrl: './header.component.html',
-  styles: []
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
 
