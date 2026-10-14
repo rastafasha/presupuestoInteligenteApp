@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Cliente } from 'src/app/models/cliente';
 import { User } from 'src/app/models/user';
 import { BusquedasService } from 'src/app/services/busqueda.service';
 import { ClienteService } from 'src/app/services/cliente.service';
 import { CotizacionService } from 'src/app/services/cotizacion.service';
+import { SocketService } from 'src/app/services/socket.service';
 import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
@@ -33,6 +35,7 @@ export class ProjectListComponent implements OnInit {
   selectedProject: Cliente;
   usuario: any;
   usuario_id: any;
+  private nuevaSolicitudSub!: Subscription;
 
   constructor(
     private clienteService: ClienteService,
@@ -40,6 +43,7 @@ export class ProjectListComponent implements OnInit {
     private busquedasService: BusquedasService,
     private route: ActivatedRoute,
     private router: Router,
+    private socketService: SocketService
 
   ) {
     let USER = localStorage.getItem('user');
@@ -50,8 +54,24 @@ export class ProjectListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProjects();
+    this.conexionmaestra();
     this.gethijo();
 
+  }
+
+  //  🔌 CONEXIÓN MAESTRA EN TIEMPO REAL:
+  conexionmaestra() {
+    // Invocamos tu función personalizada pasando el canal exacto del backend
+    this.nuevaSolicitudSub = this.socketService.escucharEvento('nueva-solicitud-entrante')
+      .subscribe((data: any) => {
+        console.log('🎯 [WEBSOCKET-FRONT]: ¡Llegó una solicitud fresca desde Node!', data);
+
+        // 🚀 INYECCIÓN REACTIVA: Añadimos la cotización al inicio del array.
+        // Al usar 'unshift', Angular redibuja la tabla en la pantalla al instante.
+        this.clientes.unshift(data);
+
+        console.log('✅ Interfaz actualizada en tiempo real sin recargar el navegador.');
+      });
   }
 
   gethijo() {
@@ -246,6 +266,14 @@ export class ProjectListComponent implements OnInit {
   onCloseModal(): void {
     this.selectedProject = null;
 
+  }
+
+  ngOnDestroy(): void {
+    // 🧹 TU LIMPIEZA AUTOMÁTICA EN ACCIÓN:
+    // Al desuscribirte, se detona el return() con el 'this.socket.off' que programaste de forma brillante
+    if (this.nuevaSolicitudSub) {
+      this.nuevaSolicitudSub.unsubscribe();
+    }
   }
 
 }
